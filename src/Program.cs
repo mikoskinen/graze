@@ -11,9 +11,7 @@ namespace graze
 {
     class Program
     {
-        private const string ConfigurationFile = "configuration.xml";
-
-        private const string TemplateFolder = "template";
+        private const string TemplateConfiguration = @"template\configuration.xml";
         private const string TemplateLayoutFile = @"template\index.cshtml";
         private const string TemplateAssetsFolder = @"template\assets";
 
@@ -25,7 +23,6 @@ namespace graze
         {
             try
             {
-
                 CreateSite();
 
                 Console.WriteLine("Static site created successfully");
@@ -63,7 +60,7 @@ namespace graze
         {
             dynamic result = new ExpandoObject();
 
-            var doc = XDocument.Load(ConfigurationFile);
+            var doc = XDocument.Load(TemplateConfiguration);
 
             var nodes = from node in doc.Element("site").Elements()
                         select node;
@@ -87,7 +84,7 @@ namespace graze
                 propertyCollection.Add(element.Name.LocalName, arrayOfValues);
             }
             else
-                propertyCollection.Add(element.Name.LocalName, element.Value);
+                propertyCollection.Add(element.Name.LocalName, GetPropertyValue(element));
         }
 
         private static List<object> CreateArray(XElement element)

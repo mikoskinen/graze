@@ -1,0 +1,130 @@
+h1. Graze
+
+Graze is a simple static site generator. It takes a template and a configuration file and generates a static web site. The generated sited is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the "Razor Syntax":http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx.
+
+h2. Getting started
+
+# Download and extract the "Graze.":https://github.com/downloads/mikoskinen/graze/graze_1_0.zip It comes with an example.
+
+# Run graze.exe.
+<p>The static site (index.html) is available from the output directory.</p>
+
+h3. Graze templates
+
+The Graze templates are created using the Razor. Here's an example:
+
+<pre>
+<code>
+<html>
+<head>
+    <title>@Model.Title</title>
+</head>
+<body>
+    <h1>@Model.Description</h1>
+</body>
+</html>
+</code>
+</pre>
+
+h3. Graze configuration
+
+The configuration for Graze is done in XML. Here's an example configuration:
+
+<pre>
+<code>
+<?xml version="1.0" encoding="utf-8" ?>
+<site>
+  <Title>Graze</Title>
+  <Description>Graze: Static site generator using Razor</Description>
+</site>
+</code>
+</pre>
+
+h3. Generating the static site
+
+Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-directory.
+
+h2. Features
+
+h3. Lists
+
+Lists can be created in XML and accessed in the Graze template. Example XML:
+
+<pre>
+<code>
+  <Features>
+    <Feature>Layouts defined using Razor syntax.</Feature>
+    <Feature>Dynamic data models created in XML.</Feature>
+    <Feature>Supports complex data models and arrays.</Feature>
+    <Feature>Fast static site generation.</Feature>
+    <Feature>Pure HTML / CSS / Javascript output. Host in Apache, IIS etc.</Feature>
+  </Features>
+</code>
+</pre>
+
+Example template for accessing the list:
+
+<pre>
+<code>
+    <h2>Features:</h2>
+    <ul>
+        @foreach (var feature in Model.Features)
+        {
+            <li>@feature</li>
+        }
+    </ul>
+</pre>
+</code>
+
+h3. Complex types
+
+By default all the data in the XML is of type string when accessed from the template. But complex types can be created also:
+
+<pre>
+<code>
+<Link Url="https://github.com/mikoskinen/graze">Source code hosted in GitHub</Link>
+</pre>
+</code>
+
+<pre>
+<code>
+<a href="@Model.Link.Url">@Model.Link.Link</a>
+</pre>
+</code>
+
+h3. Notes
+
+The configuration is case sensitive. 
+
+h2. License
+
+<pre>
+<code>
+MIT License
+Copyright (C) 2012 Mikael Koskinen
+
+Permission is hereby granted, free of charge, to any person obtaining a copy of
+this software and associated documentation files (the "Software"), to deal in
+the Software without restriction, including without limitation the rights to
+use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies
+of the Software, and to permit persons to whom the Software is furnished to do
+so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+</code>
+</pre>
+
+h3. RazorEngine
+
+Graze uses the "RazorEngine.":http://razorengine.codeplex.com/
+
+RazorEngine is available under MS-PL.
