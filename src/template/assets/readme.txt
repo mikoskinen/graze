@@ -1,0 +1,1 @@
+﻿The files and sub-folders are copied from here to the output-folder.
