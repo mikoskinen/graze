@@ -7,7 +7,7 @@ h2. Getting started
 # Download and extract the "Graze.":https://github.com/downloads/mikoskinen/graze/graze_1_0.zip It comes with an example.
 
 # Run graze.exe.
-<p>The static site (index.html) is available from the output directory.</p>
+<p>The static site (index.html) is generated into the output folder.</p>
 
 h3. Graze templates
 
@@ -40,9 +40,11 @@ The configuration for Graze is done in XML. Here's an example configuration:
 </code>
 </pre>
 
+The configuration file represents the data which is injected to the generated static site.
+
 h3. Generating the static site
 
-Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-directory.
+Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-folder.
 
 h2. Features
 
@@ -92,9 +94,25 @@ By default all the data in the XML is of type string when accessed from the temp
 </pre>
 </code>
 
-h3. Notes
+h3. Case sensitive
 
 The configuration is case sensitive. 
+
+h2. Folder structure
+
+Graze expects the following folder structure:
+
+<pre>
+<code>
+graze.exe
+--template/
+----configuration.xml
+----index.cshtml
+----assets
+</code>
+</pre>
+
+The assets folder is copied wholly to the output folder. The assets folder can include the CSS / JSS / image files required by the template.
 
 h2. License
 
