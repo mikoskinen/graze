@@ -46,6 +46,12 @@ h3. Generating the static site
 
 Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-folder.
 
+h2. Examples
+
+"The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.
+
+!http://mikaelkoskinen.net/image.axd?picture=screenshot_small.png!
+
 h2. Features
 
 h3. Lists
