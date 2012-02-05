@@ -9,8 +9,6 @@ h2. Getting started
 
 The static site (index.html) is generated into the output folder.
 
-!https://github.com/mikoskinen/graze/raw/master/doc/drawing_small.png!
-
 h2. Examples
 
 "The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.
@@ -182,6 +180,8 @@ graze.exe
 </pre>
 
 The assets folder is copied wholly to the output folder. The assets folder can include the CSS / JSS / image files required by the template.
+
+!https://github.com/mikoskinen/graze/raw/master/doc/drawing_small.png!
 
 h2. License
 
