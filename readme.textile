@@ -44,7 +44,21 @@ The configuration file represents the data which is injected to the generated st
 
 h3. Generating the static site
 
-Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-folder.
+Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-folder. Here's the output generated from the example layout and configuration:
+
+<pre>
+<code>
+<html>
+<head>
+    <title>Graze</title>
+</head>
+<body>
+    <h1>Graze: Static site generator using Razor</h1>
+</body>
+</html>
+</code>
+</pre>
+
 
 h2. Examples
 
@@ -54,7 +68,11 @@ h2. Examples
 
 h2. Features
 
-h3. Lists
+h3. Dynamic configuration
+
+The configuration.xml represents the data which is shown on the generated site. In the Graze template you can access a parameter from the configuration using the @Model-keyword. For example @Model.Title points to the <Title>My title</Title> in configuration. New configuration options can be added freely and old ones can be removed.
+
+h3. Lists and loops
 
 Lists can be created in XML and accessed in the Graze template. Example XML:
 
@@ -81,6 +99,50 @@ Example template for accessing the list:
             <li>@feature</li>
         }
     </ul>
+</pre>
+</code>
+
+h3. Ifs
+
+The programming language behind the Graze template is C# so if and if-else statements are available. Given the following configuration:
+
+<pre>
+<code>
+  <Family>
+	<Member Age="50">Saul</Member>
+	<Member Age="31">Claire</Member>
+	<Member Age="11">John</Member>
+  </Family>
+</pre>
+</code>
+
+We can output different HTML from our template based on the member's age
+
+<pre>
+<code>
+	@foreach(var member in @Model.Family)
+	{
+		var membersAge = int.Parse(member.Age);
+		
+		if (membersAge >= 18)
+		{
+			<p>@member.Member is an adult</p>
+		}
+		else
+		{
+			<p>@member.Member is a child</p>
+		}
+	}
+</pre>
+</code>
+
+Generated output:
+
+<pre>
+<code>
+			<p>Saul is an adult</p>
+			<p>Claire is an adult</p>
+			<p>John is a child</p>
 </pre>
 </code>
 
