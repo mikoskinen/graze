@@ -9,6 +9,16 @@ h2. Getting started
 
 The static site (index.html) is generated into the output folder.
 
+h2. NuGet
+
+Graze is also available from the NuGet. To get started, first create a new "Empty Project" with Visual Studio and then add the Graze using NuGet. Graze.exe and the template-folder are installed into the root of your project.
+
+<pre>
+<code>
+Install-Package graze
+</code>
+</pre>
+
 h2. Examples
 
 "The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.

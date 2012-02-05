@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <version>0.0.0</version>
+    <authors>Mikael Koskinen</authors>
+    <owners />
+    <projectUrl>https://github.com/mikoskinen/graze</projectUrl>
+    <id>graze</id>
+    <title>Graze</title>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Graze is a static site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the Razor Syntax. Use an empty Visual Studio project as a starting point.</description>
+    <copyright>Mikael Koskinen</copyright>
+    <tags>generator website site graze template templating templatingengine</tags>
+  </metadata>
+  <files>
+    <file src="..\src\bin\release\template\assets\example\configuration.txt" target="content\template\assets\example\configuration.txt" />
+    <file src="..\src\bin\release\template\assets\example\layout.txt" target="content\template\assets\example\layout.txt" />
+    <file src="..\src\bin\release\template\assets\readme.txt" target="content\template\assets\readme.txt" />
+    <file src="..\src\bin\release\template\configuration.xml" target="content\template\configuration.xml" />
+    <file src="..\src\bin\release\template\index.cshtml" target="content\template\index.cshtml" />
+    <file src="..\src\bin\release\graze.exe" target="content\graze.exe" />
+    <file src="..\src\bin\release\RazorEngine.dll" target="content\RazorEngine.dll" />
+    <file src="..\src\bin\release\System.Web.Razor.dll" target="content\System.Web.Razor.dll" />
+    <file src="readme.txt" target="content\readme.txt" />
+    <file src="install.ps1" target="tools\install.ps1" />
+  </files>
+</package>

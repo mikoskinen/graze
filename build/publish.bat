@@ -1,0 +1,1 @@
+nuget push graze.1.0.nupkg %1
