@@ -1,6 +1,6 @@
 h1. Graze
 
-Graze is a simple static site generator. It takes a template and a configuration file and generates a static web site. The generated sited is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the "Razor Syntax":http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx.
+Graze is a static site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the "Razor Syntax":http://haacked.com/archive/2011/01/06/razor-syntax-quick-reference.aspx.
 
 h2. Getting started
 
