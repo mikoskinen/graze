@@ -9,6 +9,8 @@ h2. Getting started
 
 The static site (index.html) is generated into the output folder.
 
+!https://github.com/mikoskinen/graze/raw/master/doc/drawing_small.png!
+
 h2. Examples
 
 "The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.
@@ -17,7 +19,7 @@ h2. Examples
 
 h3. Graze templates
 
-The Graze templates are created using the Razor. Here's an example:
+The Graze templates are created using the Razor syntax. Here's an example:
 
 <pre>
 <code>
@@ -50,7 +52,7 @@ The configuration file represents the data which is injected to the generated st
 
 h3. Generating the static site
 
-Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is outputted to the output-folder. Here's the output generated from the example layout and configuration:
+Once the Graze template and the configuration file are in place, the static site can be generated running the graze.exe. The static site is generated into the output-folder. 
 
 <pre>
 <code>
@@ -69,7 +71,7 @@ h2. Features
 
 h3. Dynamic configuration
 
-The configuration.xml represents the data which is shown on the generated site. In the Graze template you can access a parameter from the configuration using the @Model-keyword. For example @Model.Title points to the <Title>My title</Title> in configuration. New configuration options can be added freely and old ones can be removed.
+The configuration.xml represents the data which is shown on the generated site. In the template you can access a configuration parameter using the @Model-keyword. New configuration options can be added freely and old ones can be removed.
 
 h3. Lists and loops
 
@@ -163,7 +165,7 @@ By default all the data in the XML is of type string when accessed from the temp
 
 h3. Case sensitive
 
-The configuration is case sensitive. 
+The configuration and the templates are case sensitive. 
 
 h2. Folder structure
 
