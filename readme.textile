@@ -9,6 +9,12 @@ h2. Getting started
 
 The static site (index.html) is generated into the output folder.
 
+h2. Examples
+
+"The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.
+
+!http://mikaelkoskinen.net/image.axd?picture=screenshot_small.png!
+
 h3. Graze templates
 
 The Graze templates are created using the Razor. Here's an example:
@@ -58,13 +64,6 @@ Once the Graze template and the configuration file are in place, the static site
 </html>
 </code>
 </pre>
-
-
-h2. Examples
-
-"The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.
-
-!http://mikaelkoskinen.net/image.axd?picture=screenshot_small.png!
 
 h2. Features
 
