@@ -225,3 +225,9 @@ h3. RazorEngine
 Graze uses the "RazorEngine.":http://razorengine.codeplex.com/
 
 RazorEngine is available under MS-PL.
+
+h3. MarkdownSharp
+
+Graze uses the "MarkdownSharp.":http://code.google.com/p/markdownsharp/
+
+MarkdownSharp is available under MS-PL.

@@ -2,15 +2,22 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using Microsoft.VisualBasic.Devices;
+using RazorEngine;
+using RazorEngine.Configuration;
+using RazorEngine.Templating;
+using graze.extras;
+using graze.extras.Markdown;
 
 namespace graze
 {
     class Program
     {
+        private const string TemplateRoot = @"template\";
         private const string TemplateConfiguration = @"template\configuration.xml";
         private const string TemplateLayoutFile = @"template\index.cshtml";
         private const string TemplateAssetsFolder = @"template\assets";
@@ -18,6 +25,8 @@ namespace graze
         private const string OutputFolder = "output";
         private const string OutputHtmlPage = @"output\index.html";
         private const string OutputAssetsFolder = @"output\assets";
+
+        private static readonly List<IExtra> Extras = new List<IExtra> { new MarkdownExtra(TemplateRoot) };
 
         static void Main(string[] args)
         {
@@ -41,10 +50,12 @@ namespace graze
 
         private static void CreateSite()
         {
-            var template = File.ReadAllText(TemplateLayoutFile);
-            var model = GetModelFromXml();
+            var configuration = XDocument.Load(TemplateConfiguration);
 
-            var result = RazorEngine.Razor.Parse(template, model);
+            var model = GetModelFromXml(configuration);
+            model = AddExtras(configuration, model);
+
+            var result = GenerateOutput(model);
 
             if (Directory.Exists(OutputFolder))
                 Directory.Delete(OutputFolder, true);
@@ -56,13 +67,31 @@ namespace graze
             new Computer().FileSystem.CopyDirectory(TemplateAssetsFolder, OutputAssetsFolder);
         }
 
-        private static ExpandoObject GetModelFromXml()
+        private static string GenerateOutput(ExpandoObject model)
+        {
+            var template = File.ReadAllText(TemplateLayoutFile);
+
+            var config = new FluentTemplateServiceConfiguration(
+                c => c.WithEncoding(Encoding.Raw));
+
+            string result;
+            using (var service = new TemplateService(config))
+            {
+                result = service.Parse(template, model);
+            }
+            return result;
+        }
+
+        /// <summary>
+        /// Parses all the elements inside the "site/data" -element
+        /// </summary>
+        /// <param name="configuration">Configuration file</param>
+        /// <returns>Model</returns>
+        private static ExpandoObject GetModelFromXml(XDocument configuration)
         {
             dynamic result = new ExpandoObject();
 
-            var doc = XDocument.Load(TemplateConfiguration);
-
-            var nodes = from node in doc.Element("site").Elements()
+            var nodes = from node in configuration.Element("site").Element("data").Elements()
                         select node;
 
             var modelProperties = (IDictionary<String, Object>)result;
@@ -109,6 +138,38 @@ namespace graze
             objProperties.Add(element.Name.LocalName, element.Value);
 
             return obj;
+        }
+
+        /// <summary>
+        /// Adds data to model based on elements inside the "site/extra" element
+        /// </summary>
+        /// <param name="configuration"></param>
+        /// <param name="model"></param>
+        /// <returns></returns>
+        private static ExpandoObject AddExtras(XDocument configuration, ExpandoObject model)
+        {
+            var extraElement = configuration.Element("site").Element("extra");
+
+            if (extraElement == null)
+                return model;
+                               
+            var elements = from node in extraElement.Elements()
+                           select node;
+
+            foreach (var element in elements)
+            {
+                var name = element.Value.ToString(CultureInfo.InvariantCulture);
+
+                foreach (var extra in Extras)
+                {
+                    if (!extra.CanProcess(element))
+                        continue;
+
+                    ((IDictionary<String, Object>)model).Add(name, extra.GetExtra(element));
+                }
+            }
+
+            return model;
         }
     }
 
