@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
 using System.Dynamic;
 using System.Globalization;
@@ -10,12 +12,12 @@ using Microsoft.VisualBasic.Devices;
 using RazorEngine;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
-using graze.extras;
-using graze.extras.Markdown;
+using graze.contracts;
 
 namespace graze
 {
-    class Program
+    [Export(typeof(IFolderConfiguration))]
+    public class Program : IFolderConfiguration
     {
         private const string TemplateRoot = @"template\";
         private const string TemplateConfiguration = @"template\configuration.xml";
@@ -26,13 +28,20 @@ namespace graze
         private const string OutputHtmlPage = @"output\index.html";
         private const string OutputAssetsFolder = @"output\assets";
 
-        private static readonly List<IExtra> Extras = new List<IExtra> { new MarkdownExtra(TemplateRoot) };
+        public string TemplateRootFolder
+        {
+            get { return TemplateRoot; }
+        }
+
+        [ImportMany(typeof(IExtra))]
+        public IEnumerable<IExtra> Extras { get; set; }
 
         static void Main(string[] args)
         {
             try
             {
-                CreateSite();
+                var program = new Program();
+                program.Run();
 
                 Console.WriteLine("Static site created successfully");
 
@@ -48,7 +57,16 @@ namespace graze
             }
         }
 
-        private static void CreateSite()
+        public void Run()
+        {
+            var catalog = new DirectoryCatalog(@".\extras\");
+            var container = new CompositionContainer(catalog);
+            container.ComposeParts(this);
+
+            CreateSite();            
+        }
+
+        private void CreateSite()
         {
             var configuration = XDocument.Load(TemplateConfiguration);
 
@@ -146,7 +164,7 @@ namespace graze
         /// <param name="configuration"></param>
         /// <param name="model"></param>
         /// <returns></returns>
-        private static ExpandoObject AddExtras(XDocument configuration, ExpandoObject model)
+        private ExpandoObject AddExtras(XDocument configuration, ExpandoObject model)
         {
             var extraElement = configuration.Element("site").Element("extra");
 

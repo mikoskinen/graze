@@ -1,17 +1,15 @@
-﻿using System.IO;
-using System.Web;
+﻿using System.ComponentModel.Composition;
+using System.IO;
 using System.Xml.Linq;
+using graze.contracts;
 
 namespace graze.extras.Markdown
 {
+    [Export(typeof(IExtra))]
     public class MarkdownExtra : IExtra
     {
-        private readonly string templateRootFolder;
-
-        public MarkdownExtra(string templateRootFolder)
-        {
-            this.templateRootFolder = templateRootFolder;
-        }
+        [Import(typeof(IFolderConfiguration))]
+        private IFolderConfiguration configuration; 
 
         public bool CanProcess(XElement element)
         {
@@ -24,7 +22,7 @@ namespace graze.extras.Markdown
             if (xAttribute == null)
                 return string.Empty;
 
-            var fileLocation = Path.Combine(templateRootFolder, xAttribute.Value);
+            var fileLocation = Path.Combine(configuration.TemplateRootFolder, xAttribute.Value);
 
             var options = new MarkdownSharp.MarkdownOptions
             {

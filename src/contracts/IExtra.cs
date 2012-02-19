@@ -1,6 +1,6 @@
 using System.Xml.Linq;
 
-namespace graze.extras
+namespace graze.contracts
 {
     /// <summary>
     /// Model enhancer
