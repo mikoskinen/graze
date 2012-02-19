@@ -155,6 +155,7 @@ Generated output:
 </pre>
 </code>
 
+
 h3. Complex types
 
 By default all the data in the XML is of type string when accessed from the template. But complex types can be created also:
