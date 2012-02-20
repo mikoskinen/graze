@@ -3,7 +3,7 @@ using System.IO;
 using System.Xml.Linq;
 using graze.contracts;
 
-namespace graze.extras.Markdown
+namespace graze.extra.markdown
 {
     [Export(typeof(IExtra))]
     public class MarkdownExtra : IExtra
@@ -24,7 +24,7 @@ namespace graze.extras.Markdown
 
             var fileLocation = Path.Combine(configuration.TemplateRootFolder, xAttribute.Value);
 
-            var options = new MarkdownSharp.MarkdownOptions
+            var options = new MarkdownOptions
             {
                 AutoHyperlink = true,
                 AutoNewlines = true,
@@ -34,7 +34,7 @@ namespace graze.extras.Markdown
                 StrictBoldItalic = true
             };
 
-            var parser = new MarkdownSharp.Markdown(options);
+            var parser = new Markdown(options);
 
             var result = parser.Transform(File.ReadAllText(fileLocation));
 

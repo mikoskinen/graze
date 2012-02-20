@@ -91,9 +91,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\contracts\contracts.csproj">
+    <ProjectReference Include="..\contracts\graze.contracts.csproj">
       <Project>{8151C0F4-F069-4CB0-8D7C-B835DF063E22}</Project>
-      <Name>contracts</Name>
+      <Name>graze.contracts</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
