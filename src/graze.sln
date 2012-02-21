@@ -4,6 +4,7 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze", "core\graze.csproj", "{DB34292C-2434-49A3-BAA2-1BCA8E28064A}"
 	ProjectSection(ProjectDependencies) = postProject
 		{5AF7BC55-BE58-4D3A-A36D-657EC1F0256A} = {5AF7BC55-BE58-4D3A-A36D-657EC1F0256A}
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF} = {4926625A-0D71-4DAA-9ABA-D361CAA736DF}
 		{AA283C88-6951-4C06-8A5D-D6F3B2B7E4E3} = {AA283C88-6951-4C06-8A5D-D6F3B2B7E4E3}
 	EndProjectSection
 EndProject
@@ -12,6 +13,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.markdown", "extras\graze.extra.markdown\graze.extra.markdown.csproj", "{AA283C88-6951-4C06-8A5D-D6F3B2B7E4E3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.rss", "extras\graze.extra.rss\graze.extra.rss.csproj", "{5AF7BC55-BE58-4D3A-A36D-657EC1F0256A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.html", "extras\graze.extra.html\graze.extra.html.csproj", "{4926625A-0D71-4DAA-9ABA-D361CAA736DF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.youtube", "extras\graze.extra.youtube\graze.extra.youtube.csproj", "{BEEF4C01-F510-412C-BD4E-B94B4392309B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -63,6 +68,26 @@ Global
 		{5AF7BC55-BE58-4D3A-A36D-657EC1F0256A}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{5AF7BC55-BE58-4D3A-A36D-657EC1F0256A}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{5AF7BC55-BE58-4D3A-A36D-657EC1F0256A}.Release|x86.ActiveCfg = Release|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{4926625A-0D71-4DAA-9ABA-D361CAA736DF}.Release|x86.ActiveCfg = Release|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{BEEF4C01-F510-412C-BD4E-B94B4392309B}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

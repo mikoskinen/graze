@@ -23,5 +23,6 @@
     <Markdown Location="pages/help.md">Help</Markdown>
     <Markdown Location="pages/tutorial.md">Tutorial</Markdown>
     <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
+    <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
   </extra>
 </site>
