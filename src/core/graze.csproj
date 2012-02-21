@@ -62,9 +62,6 @@
     <None Include="template\index.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="template\pages\tutorial.md">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="template\pages\help.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
