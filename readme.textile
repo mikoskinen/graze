@@ -4,7 +4,7 @@ Graze is a static site generator. It takes a template and a configuration file a
 
 h2. Getting started
 
-# Download and extract the "Graze.":https://github.com/downloads/mikoskinen/graze/graze_1_0.zip It comes with an example.
+# Download and extract the "Graze.":https://github.com/downloads/mikoskinen/graze/graze_4_0_0.zip It comes with an example.
 # Run graze.exe.
 
 The static site (index.html) is generated into the output folder.
