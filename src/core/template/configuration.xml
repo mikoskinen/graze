@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<site>
-  <data>
+<data>
+  <site>
     <Title>Graze</Title>
     <Description>Graze: Static site generator using Razor</Description>
     <Features>
@@ -18,10 +18,8 @@
       <Link Url="https://github.com/mikoskinen/graze">Source code hosted in GitHub</Link>
       <Link Url="http://mikaelkoskinen.net">Created by Mikael Koskinen</Link>
     </Links>
-  </data>
-  <extra>
-    <Markdown Location="pages/help.md">Help</Markdown>
-    <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
-    <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
-  </extra>
-</site>
+  </site>
+  <Markdown Location="pages/help.md">Help</Markdown>
+  <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
+  <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
+</data>

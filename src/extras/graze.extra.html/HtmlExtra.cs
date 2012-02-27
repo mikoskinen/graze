@@ -8,9 +8,9 @@ namespace graze.extra.html
     [Export(typeof(IExtra))]
     public class HtmlExtra : IExtra
     {
-        public bool CanProcess(XElement element)
+        public string KnownElement
         {
-            return element != null && element.Name.LocalName.Equals("Html");
+            get { return "Html"; }
         }
 
         public object GetExtra(XElement element)

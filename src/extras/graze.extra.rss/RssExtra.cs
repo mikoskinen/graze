@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.ComponentModel.Composition;
+﻿using System.ComponentModel.Composition;
 using System.ServiceModel.Syndication;
 using System.Xml;
 using System.Xml.Linq;
@@ -10,9 +9,9 @@ namespace graze.extra.rss
     [Export(typeof(IExtra))]
     public class RssExtra : IExtra
     {
-        public bool CanProcess(XElement element)
+        public string KnownElement
         {
-            return element != null && element.Name.LocalName.Equals("Rss");
+            get { return "Rss"; }
         }
 
         public object GetExtra(XElement element)

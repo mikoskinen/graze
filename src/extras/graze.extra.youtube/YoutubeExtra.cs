@@ -8,9 +8,9 @@ namespace graze.extra.youtube
     [Export(typeof(IExtra))]
     public class YoutubeExtra : IExtra
     {
-        public bool CanProcess(XElement element)
+        public string KnownElement
         {
-            return element != null && element.Name.LocalName.Equals("Youtube");
+            get { return "Youtube"; }
         }
 
         public object GetExtra(XElement element)

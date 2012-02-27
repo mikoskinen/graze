@@ -20,12 +20,28 @@
             <li><a href="@file.Location">@file.File</a></li>
         }
     </ul>
-    <h2>Links:</h2>
+    <h2>
+        Links:</h2>
     @foreach (var link in Model.Links)
     {
         <p>
             <a target="_blank" href="@link.Url">@link.Link</a>
         </p>
     }
+    <h2>
+        Markdown example:</h2>
+    @Model.Help
+    <h2>
+        Rss example:</h2>
+        
+    <a href="@Model.Blog.Links[0].Uri"> @Model.Blog.Title.Text</a>
+    <ul>
+        @foreach (var rssPost in Model.Blog.Items)
+        {
+            <li><a href="@rssPost.Id" target="_blan">@rssPost.Title.Text</a></li>
+        }
+    </ul>
+    <h2>Youtube example:</h2>
+    @Model.IRC7Movie
 </body>
 </html>

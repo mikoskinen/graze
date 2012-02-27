@@ -1,20 +1,25 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-<site>
-  <Title>Graze</Title>
-  <Description>Graze: Static site generator using Razor</Description>
-  <Features>
-    <Feature>Layouts defined using Razor syntax.</Feature>
-    <Feature>Dynamic data models created in XML.</Feature>
-    <Feature>Supports complex data models and arrays.</Feature>
-    <Feature>Fast static site generation.</Feature>
-    <Feature>Pure HTML / CSS / Javascript output. Host in Apache, IIS etc.</Feature>
-  </Features>
-  <Files>
-    <File Location="assets/example/layout.txt">This layout.</File>
-    <File Location="assets/example/configuration.txt">The configuration.</File>
-  </Files>
-  <Links>
-    <Link Url="https://github.com/mikoskinen/graze">Source code hosted in GitHub</Link>
-    <Link Url="http://mikaelkoskinen.net">Created by Mikael Koskinen</Link>
-  </Links>
-</site>
+<data>
+  <site>
+    <Title>Graze</Title>
+    <Description>Graze: Static site generator using Razor</Description>
+    <Features>
+      <Feature>Layouts defined using Razor syntax.</Feature>
+      <Feature>Dynamic data models created in XML.</Feature>
+      <Feature>Supports complex data models and arrays.</Feature>
+      <Feature>Fast static site generation.</Feature>
+      <Feature>Pure HTML / CSS / Javascript output. Host in Apache, IIS etc.</Feature>
+    </Features>
+    <Files>
+      <File Location="assets/example/layout.txt">This layout.</File>
+      <File Location="assets/example/configuration.txt">The configuration.</File>
+    </Files>
+    <Links>
+      <Link Url="https://github.com/mikoskinen/graze">Source code hosted in GitHub</Link>
+      <Link Url="http://mikaelkoskinen.net">Created by Mikael Koskinen</Link>
+    </Links>
+  </site>
+  <Markdown Location="pages/help.md">Help</Markdown>
+  <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
+  <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
+</data>

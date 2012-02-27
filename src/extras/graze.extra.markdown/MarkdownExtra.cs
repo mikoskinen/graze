@@ -11,9 +11,9 @@ namespace graze.extra.markdown
         [Import(typeof(IFolderConfiguration))]
         private IFolderConfiguration configuration; 
 
-        public bool CanProcess(XElement element)
+        public string KnownElement
         {
-            return element != null && element.Name.LocalName.Equals("Markdown");
+            get { return "Markdown"; }
         }
 
         public object GetExtra(XElement element)
@@ -39,7 +39,6 @@ namespace graze.extra.markdown
             var result = parser.Transform(File.ReadAllText(fileLocation));
 
             return result;
-            //return new HtmlString(result);
         }
     }
 }

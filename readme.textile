@@ -49,10 +49,12 @@ The configuration for Graze is done in XML. Here's an example configuration:
 <pre>
 <code>
 <?xml version="1.0" encoding="utf-8" ?>
-<site>
-  <Title>Graze</Title>
-  <Description>Graze: Static site generator using Razor</Description>
-</site>
+<data>
+	<site>
+		<Title>Graze</Title>
+		<Description>Graze: Static site generator using Razor</Description>
+	</site>
+</data>
 </code>
 </pre>
 
@@ -175,6 +177,17 @@ By default all the data in the XML is of type string when accessed from the temp
 h3. Case sensitive
 
 The configuration and the templates are case sensitive. 
+
+h2. Extras
+
+The Graze's core can create the site's model from the configuration file's site-element. But, the model can be enhanced using extras. Graze comes bundled with the following extras:
+
+* Markdown
+* HTML
+* RSS
+* YouTube
+
+The example template bundled with the Graze shows how to use these model enhancers.
 
 h2. Folder structure
 

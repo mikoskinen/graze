@@ -7,7 +7,7 @@ namespace graze.contracts
     /// </summary>
     public interface IExtra
     {
-        bool CanProcess(XElement element);
+        string KnownElement { get; }
         object GetExtra(XElement element);
     }
 }
