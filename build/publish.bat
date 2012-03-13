@@ -1,1 +1,1 @@
-nuget push graze.3.0.nupkg %1
+nuget push graze.3.1.nupkg %1
