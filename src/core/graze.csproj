@@ -55,6 +55,7 @@
   <ItemGroup>
     <Compile Include="extras\SiteExtra.cs" />
     <Compile Include="Graze.cs" />
+    <Compile Include="infrastructure\Options.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using Mono.Options;
 
 namespace graze
 {
@@ -11,7 +13,8 @@ namespace graze
         {
             try
             {
-                var core = new Core();
+                var parameters = GetParameters(args);
+                var core = new Core(parameters);
 
                 var extrasFolderCatalog = new DirectoryCatalog(@".\extras\");
                 var currentAssemblyCatalog = new AssemblyCatalog(typeof(Program).Assembly);
@@ -34,6 +37,35 @@ namespace graze
                 if (Debugger.IsAttached)
                     Console.ReadLine();
             }
+        }
+
+
+        static Core.Parameters GetParameters(IEnumerable<string> args)
+        {
+            string templateRoot = null;
+            string outputRoot = null;
+            var shopHelp = false;
+
+            var options = new OptionSet()
+                                  {
+                                      {"t|template=", "The template's root folder.", v => templateRoot = v},
+                                      {"o|output=", "The output folder where static site is generated.", v => outputRoot = v},
+                                      { "h|help",  "show this message and exit", v => shopHelp = true}
+                                  };
+
+            options.Parse(args);
+
+            if (shopHelp)
+            {
+                options.WriteOptionDescriptions(Console.Out);
+                if (Debugger.IsAttached)
+                    Console.ReadLine();
+
+                Environment.Exit(0);
+            }
+
+            return new Core.Parameters(templateRoot, outputRoot);
+
         }
     }
 

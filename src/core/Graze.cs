@@ -4,6 +4,7 @@ using System.Dynamic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Threading;
 using System.Xml.Linq;
 using Microsoft.VisualBasic.Devices;
 using RazorEngine.Configuration;
@@ -15,21 +16,25 @@ namespace graze
     [Export(typeof(IFolderConfiguration))]
     public class Core : IFolderConfiguration
     {
-        private const string TemplateRoot = @"template\";
-        private const string TemplateConfiguration = @"template\configuration.xml";
-        private const string TemplateLayoutFile = @"template\index.cshtml";
-        private const string TemplateAssetsFolder = @"template\assets";
-
-        private const string OutputFolder = "output";
-        private const string OutputHtmlPage = @"output\index.html";
-        private const string OutputAssetsFolder = @"output\assets";
+        private readonly Parameters parameters;
 
         [ImportMany(typeof(IExtra))]
         public IEnumerable<IExtra> Extras { get; set; }
 
         public string TemplateRootFolder
         {
-            get { return TemplateRoot; }
+            get { return parameters.TemplateRoot; }
+        }
+
+        public Core()
+            : this(Parameters.Default)
+        {
+        }
+
+        public Core(Parameters parameters)
+        {
+            this.parameters = parameters;
+
         }
 
         public void Run()
@@ -39,20 +44,23 @@ namespace graze
 
         private void CreateSite()
         {
-            var configuration = XDocument.Load(TemplateConfiguration);
+            var configuration = XDocument.Load(parameters.TemplateConfigurationFile);
 
             var model = CreateModel(configuration);
 
             var result = GenerateOutput(model);
 
-            if (Directory.Exists(OutputFolder))
-                Directory.Delete(OutputFolder, true);
+            if (Directory.Exists(parameters.OutputRoot))
+            {
+                Directory.Delete(parameters.OutputRoot, true);
+                Thread.Sleep(150);
+            }
 
-            Directory.CreateDirectory(OutputFolder);
+            Directory.CreateDirectory(parameters.OutputRoot);
 
-            File.WriteAllText(OutputHtmlPage, result);
+            File.WriteAllText(parameters.OutputHtmlPage, result);
 
-            new Computer().FileSystem.CopyDirectory(TemplateAssetsFolder, OutputAssetsFolder);
+            new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
         }
 
         /// <summary>
@@ -113,9 +121,9 @@ namespace graze
         /// </summary>
         /// <param name="model"></param>
         /// <returns></returns>
-        private static string GenerateOutput(ExpandoObject model)
+        private string GenerateOutput(ExpandoObject model)
         {
-            var template = File.ReadAllText(TemplateLayoutFile);
+            var template = File.ReadAllText(this.parameters.TemplateLayoutFile);
 
             var config = new FluentTemplateServiceConfiguration(
                 c => c.WithEncoding(RazorEngine.Encoding.Raw));
@@ -126,6 +134,50 @@ namespace graze
                 result = service.Parse(template, model);
             }
             return result;
+        }
+
+        public class Parameters
+        {
+            public string TemplateRoot { get; private set; }
+            public string OutputRoot { get; private set; }
+
+            public string TemplateConfigurationFile { get; private set; }
+            public string TemplateLayoutFile { get; private set; }
+            public string TemplateAssetsFolder { get; private set; }
+            public string OutputHtmlPage { get; private set; }
+            public string OutputAssetsFolder { get; private set; }
+
+            public Parameters(string templateRoot, string outputRoot)
+                : this(templateRoot ?? defaultTemplateRoot,
+                    outputRoot ?? defaultOutputRoot,
+                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultConfigurationFile),
+                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile),
+                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
+                    Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
+                    Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder)) { }
+
+            public Parameters(string templateRoot, string outputRoot, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder)
+            {
+                TemplateRoot = templateRoot;
+                OutputRoot = outputRoot;
+                TemplateConfigurationFile = templateConfigurationFile;
+                TemplateLayoutFile = templateLayoutFile;
+                TemplateAssetsFolder = templateAssetsFolder;
+                OutputHtmlPage = outputHtmlPage;
+                OutputAssetsFolder = outputAssetsFolder;
+            }
+
+            public static Parameters Default
+            {
+                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot); }
+            }
+
+            private const string defaultTemplateRoot = "template";
+            private const string defaultOutputRoot = "output";
+            private const string defaultConfigurationFile = "configuration.xml";
+            private const string defaultLayoutFile = "index.cshtml";
+            private const string defaultAssetsFolder = "assets";
+            private const string defaultOutputPage = "index.html";
         }
     }
 }

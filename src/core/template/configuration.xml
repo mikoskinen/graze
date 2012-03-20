@@ -20,6 +20,6 @@
     </Links>
   </site>
   <Markdown Location="pages/help.md">Help</Markdown>
-  <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
+  <Rss Url="http://feeds.feedburner.com/windowsphoneirc">Blog</Rss>
   <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
 </data>
