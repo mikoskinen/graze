@@ -36,6 +36,8 @@ namespace graze
 
                 if (Debugger.IsAttached)
                     Console.ReadLine();
+
+                Environment.ExitCode = 1;
             }
         }
 
