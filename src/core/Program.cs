@@ -46,13 +46,20 @@ namespace graze
         {
             string templateRoot = null;
             string outputRoot = null;
-            var shopHelp = false;
+            string templateFile = null;
+            string outputFile = null;
 
-            var options = new OptionSet()
-                                  {
+            var shopHelp = false;
+            var copyAssets = true;
+
+            var options = new OptionSet
+                              {
                                       {"t|template=", "The template's root folder.", v => templateRoot = v},
                                       {"o|output=", "The output folder where static site is generated.", v => outputRoot = v},
-                                      { "h|help",  "show this message and exit", v => shopHelp = true}
+                                      {"tf|templatefile=", "The template's file name. Default: index.cshtml.", v => templateFile = v},
+                                      {"of|outputfile=", "The output file which is generated.", v => outputFile = v},
+                                      { "h|help",  "Show this message and exit", v => shopHelp = true},
+                                      { "s|skip",  "Skip directory creation and asset-folder copy", v => copyAssets = false},
                                   };
 
             options.Parse(args);
@@ -66,7 +73,7 @@ namespace graze
                 Environment.Exit(0);
             }
 
-            return new Core.Parameters(templateRoot, outputRoot);
+            return new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile);
 
         }
     }

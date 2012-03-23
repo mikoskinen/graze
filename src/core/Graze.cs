@@ -50,17 +50,22 @@ namespace graze
 
             var result = GenerateOutput(model);
 
-            if (Directory.Exists(parameters.OutputRoot))
+            if (parameters.HandleDirectories)
             {
-                Directory.Delete(parameters.OutputRoot, true);
+                if (Directory.Exists(parameters.OutputRoot))
+                {
+                    Directory.Delete(parameters.OutputRoot, true);
+                    Thread.Sleep(150);
+                }
+
+                Directory.CreateDirectory(parameters.OutputRoot);
                 Thread.Sleep(150);
+
+                new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
             }
 
-            Directory.CreateDirectory(parameters.OutputRoot);
 
             File.WriteAllText(parameters.OutputHtmlPage, result);
-
-            new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
         }
 
         /// <summary>
@@ -140,6 +145,12 @@ namespace graze
         {
             public string TemplateRoot { get; private set; }
             public string OutputRoot { get; private set; }
+            private bool handleDirectories = true;
+            public bool HandleDirectories
+            {
+                get { return handleDirectories; }
+                private set { handleDirectories = value; }
+            }
 
             public string TemplateConfigurationFile { get; private set; }
             public string TemplateLayoutFile { get; private set; }
@@ -147,19 +158,21 @@ namespace graze
             public string OutputHtmlPage { get; private set; }
             public string OutputAssetsFolder { get; private set; }
 
-            public Parameters(string templateRoot, string outputRoot)
+            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string layoutFile, string outputPage)
                 : this(templateRoot ?? defaultTemplateRoot,
                     outputRoot ?? defaultOutputRoot,
+                    handleDirectories,
                     Path.Combine(templateRoot ?? defaultTemplateRoot, defaultConfigurationFile),
-                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile),
+                    layoutFile ?? Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile),
                     Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
-                    Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
+                    outputPage ?? Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
                     Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder)) { }
 
-            public Parameters(string templateRoot, string outputRoot, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder)
+            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder)
             {
                 TemplateRoot = templateRoot;
                 OutputRoot = outputRoot;
+                HandleDirectories = handleDirectories;
                 TemplateConfigurationFile = templateConfigurationFile;
                 TemplateLayoutFile = templateLayoutFile;
                 TemplateAssetsFolder = templateAssetsFolder;
@@ -169,7 +182,7 @@ namespace graze
 
             public static Parameters Default
             {
-                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot); }
+                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot, true, null, null); }
             }
 
             private const string defaultTemplateRoot = "template";
