@@ -1,0 +1,12 @@
+﻿<html>
+<head>
+    <title>@Model.Title</title>
+</head>
+    <body>
+        <h1>All tags</h1>
+        @foreach(var tag in Model.Tags)
+        {
+            <li><a href="@tag.Location">@tag.Name (@tag.Count)</a> </li>
+        }
+    </body>
+</html>

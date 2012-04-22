@@ -13,7 +13,7 @@ namespace graze.extra.html
             get { return "Html"; }
         }
 
-        public object GetExtra(XElement element)
+        public object GetExtra(XElement element, dynamic currentModel)
         {
             var xAttribute = element.Attribute("Url");
             if (xAttribute == null)

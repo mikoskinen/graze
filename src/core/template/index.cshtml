@@ -43,5 +43,11 @@
     </ul>
     <h2>Youtube example:</h2>
     @Model.IRC7Movie
+    
+    <h2>Child pages example:</h2>
+        @foreach (var post in Model.ChildPages)
+        {
+            <li><a href="@post.Location" target="_blan">@post.Title</a></li>
+        }
 </body>
 </html>

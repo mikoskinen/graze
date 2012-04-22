@@ -20,6 +20,7 @@
     </Links>
   </site>
   <Markdown Location="pages/help.md">Help</Markdown>
-  <Rss Url="http://feeds.feedburner.com/windowsphoneirc">Blog</Rss>
+  <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
   <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
+  <ChildPages Location="childpages" IndexLayoutFile="pagesindex.cshtml" TagsIndexLayoutFile="tagsindex.cshtml" TagLayoutFile="tag.cshtml">ChildPages</ChildPages>
 </data>

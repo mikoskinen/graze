@@ -8,6 +8,6 @@ namespace graze.contracts
     public interface IExtra
     {
         string KnownElement { get; }
-        object GetExtra(XElement element);
+        object GetExtra(XElement element, dynamic currentModel);
     }
 }

@@ -1,0 +1,12 @@
+﻿<html>
+<head>
+    <title>@Model.Title</title>
+</head>
+    <body>
+        <h1>@Model.Tag.Name</h1>
+        @foreach(var page in Model.Tag.Pages)
+        {
+            <li><a href="@page.Location">@page.Title</a> </li>
+        }
+    </body>
+</html>

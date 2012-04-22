@@ -16,7 +16,7 @@ namespace graze.extra.markdown
             get { return "Markdown"; }
         }
 
-        public object GetExtra(XElement element)
+        public object GetExtra(XElement element, dynamic currentModel)
         {
             var xAttribute = element.Attribute("Location");
             if (xAttribute == null)

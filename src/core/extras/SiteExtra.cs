@@ -15,7 +15,7 @@ namespace graze.extras
             get { return "site"; }
         }
 
-        public object GetExtra(XElement element)
+        public object GetExtra(XElement element, dynamic result1)
         {
             var result = new Dictionary<string, object>();
 

@@ -14,7 +14,8 @@ using graze.contracts;
 namespace graze
 {
     [Export(typeof(IFolderConfiguration))]
-    public class Core : IFolderConfiguration
+    [Export(typeof(IGenerator))]
+    public class Core : IFolderConfiguration, IGenerator
     {
         private readonly Parameters parameters;
 
@@ -24,6 +25,11 @@ namespace graze
         public string TemplateRootFolder
         {
             get { return parameters.TemplateRoot; }
+        }
+
+        public string OutputRootFolder
+        {
+            get { return parameters.OutputRoot; }
         }
 
         public Core()
@@ -44,12 +50,23 @@ namespace graze
 
         private void CreateSite()
         {
+            CreateOutputDirectory();
+
             var configuration = XDocument.Load(parameters.TemplateConfigurationFile);
 
             var model = CreateModel(configuration);
 
-            var result = GenerateOutput(model);
+            var template = File.ReadAllText(this.parameters.TemplateLayoutFile);
+            var result = GenerateOutput(model, template);
 
+            if (parameters.HandleDirectories)
+                new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
+
+            File.WriteAllText(parameters.OutputHtmlPage, result);
+        }
+
+        private void CreateOutputDirectory()
+        {
             if (parameters.HandleDirectories)
             {
                 if (Directory.Exists(parameters.OutputRoot))
@@ -60,12 +77,7 @@ namespace graze
 
                 Directory.CreateDirectory(parameters.OutputRoot);
                 Thread.Sleep(150);
-
-                new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
             }
-
-
-            File.WriteAllText(parameters.OutputHtmlPage, result);
         }
 
         /// <summary>
@@ -87,7 +99,6 @@ namespace graze
 
             foreach (var element in elements)
             {
-
                 var name = element.Value.ToString(CultureInfo.InvariantCulture);
 
                 foreach (var extra in Extras)
@@ -95,7 +106,7 @@ namespace graze
                     if (!CanProcess(extra, element))
                         continue;
 
-                    var modelExtra = extra.GetExtra(element);
+                    var modelExtra = extra.GetExtra(element, result);
 
                     var resultDictionary = modelExtra as IDictionary<string, object>;
                     var containsMultipleModelProperties = resultDictionary != null;
@@ -109,10 +120,10 @@ namespace graze
                     else
                     {
                         ((IDictionary<string, object>)result).Add(name, modelExtra);
-
                     }
                 }
             }
+
             return result;
         }
 
@@ -121,15 +132,8 @@ namespace graze
             return element != null && element.Name.LocalName.Equals(extra.KnownElement);
         }
 
-        /// <summary>
-        /// Generates the static output based on the model and the template
-        /// </summary>
-        /// <param name="model"></param>
-        /// <returns></returns>
-        private string GenerateOutput(ExpandoObject model)
+        public static string GenerateOutput(ExpandoObject model, string template)
         {
-            var template = File.ReadAllText(this.parameters.TemplateLayoutFile);
-
             var config = new FluentTemplateServiceConfiguration(
                 c => c.WithEncoding(RazorEngine.Encoding.Raw));
 
@@ -138,6 +142,7 @@ namespace graze
             {
                 result = service.Parse(template, model);
             }
+
             return result;
         }
 
@@ -191,6 +196,11 @@ namespace graze
             private const string defaultLayoutFile = "index.cshtml";
             private const string defaultAssetsFolder = "assets";
             private const string defaultOutputPage = "index.html";
+        }
+
+        string IGenerator.GenerateOutput(ExpandoObject model, string template)
+        {
+            return GenerateOutput(model, template);
         }
     }
 }

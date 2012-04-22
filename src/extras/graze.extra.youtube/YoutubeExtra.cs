@@ -13,7 +13,7 @@ namespace graze.extra.youtube
             get { return "Youtube"; }
         }
 
-        public object GetExtra(XElement element)
+        public object GetExtra(XElement element, dynamic currentModel)
         {
             var urlAttribute = element.Attribute("Url");
             if (urlAttribute == null)
