@@ -3,14 +3,20 @@
     <title>@Model.Title</title>
 </head>
 <body>
-    <h1>@Model.Post.Title</h1>
-    <h2>@Model.Post.Description</h2>
-    <h2>@Model.Post.Location</h2>
-    
-    @Model.Post.Content
-    
-@*    @Model.Post.NextPost.Title
-    @Model.Post.PreviousPost.Title
-*@
+    <h1>@Model.Page.Title</h1>
+    <h2>@Model.Page.Description</h2>
+    <h2>@Model.Page.Location</h2>
+    @Model.Page.Content
+    <h3>Tags</h3>
+    @foreach (var tag in @Model.Page.Tags)
+    {
+        <h4><a href="@tag.Location">@tag.Name</a></h4>
+        <ul>
+            @foreach (var page in @tag.Pages)
+            {
+                <li>@page.Title</li>
+            }
+        </ul>
+    }
 </body>
 </html>

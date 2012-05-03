@@ -44,9 +44,10 @@
   <ItemGroup>
     <Compile Include="ChildPagesExtra.cs" />
     <Compile Include="Markdown.cs" />
-    <Compile Include="Post.cs" />
+    <Compile Include="Page.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StringExtension.cs" />
+    <Compile Include="Tag.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\contracts\graze.contracts.csproj">
