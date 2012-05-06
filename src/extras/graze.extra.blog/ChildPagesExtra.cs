@@ -19,6 +19,8 @@ namespace graze.extra.childpages
         [Import(typeof(IGenerator))]
         private IGenerator generator;
 
+        private string relativePathPrefix;
+
         public string KnownElement
         {
             get { return "ChildPages"; }
@@ -26,6 +28,8 @@ namespace graze.extra.childpages
 
         public object GetExtra(XElement element, dynamic currentModel)
         {
+            relativePathPrefix = element.Attribute("RelativePathPrefix").Value;
+
             var childPagesFolder = GetChildPagesFolder(element);
 
             var childPagesOutputFolder = element.Value.ToLowerInvariant();
@@ -39,14 +43,14 @@ namespace graze.extra.childpages
 
             CreateChildPageIndex(posts, currentModel, outputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("IndexLayoutFile").Value));
 
-            CreateTagPages(currentModel, outputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagLayoutFile").Value), Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagsIndexLayoutFile").Value));
+            CreateTagPages(currentModel, outputFolder, childPagesOutputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagLayoutFile").Value), Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagsIndexLayoutFile").Value));
 
             GeneratePages(posts, currentModel, outputFolder );
 
             return posts.OrderBy(x => x.Time).ToList();
         }
 
-        private void CreateTagPages(dynamic currentModel, string outputFolder, string tagLayoutFile, string tagsIndexLayoutFile)
+        private void CreateTagPages(dynamic currentModel, string outputFolder, string childPagesOutputFolder,  string tagLayoutFile, string tagsIndexLayoutFile)
         {
             var tagsRoot = Path.Combine(outputFolder, "tags");
             Directory.CreateDirectory(tagsRoot);
@@ -81,7 +85,7 @@ namespace graze.extra.childpages
             modelDictionary.Add("Tags", allTags.Select(t =>
                                                            {
                                                                var tag = t.Value;
-                                                               tag.Location = Path.Combine(@"\", "tags", tag.Name);
+                                                               tag.Location = Path.Combine(@"\", relativePathPrefix, childPagesOutputFolder, "tags", tag.Name).Replace(@"\", @"/");
 
                                                                return tag;
                                                            }) .ToList());
@@ -139,7 +143,7 @@ namespace graze.extra.childpages
             var post = new Page
                            {
                                Description = description,
-                               Location = Path.Combine(@"\",childPagesRootFolder, permalink),
+                               Location = Path.Combine(@"\", relativePathPrefix, childPagesRootFolder, permalink).Replace(@"\", @"/"),
                                Title = title,
                                Time = time,
                                TagNames =  tags,
