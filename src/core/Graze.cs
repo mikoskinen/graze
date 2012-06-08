@@ -43,26 +43,38 @@ namespace graze
 
         }
 
-        public void Run()
+        public string Run()
         {
-            CreateSite();
+            dynamic result = new ExpandoObject();
+
+            return Run(result);
         }
 
-        private void CreateSite()
+        public string Run(ExpandoObject startingModel)
+        {
+            var result = CreateSite(startingModel);
+
+            return result;
+        }
+
+        private string CreateSite(ExpandoObject startingModel)
         {
             CreateOutputDirectory();
 
             var configuration = XDocument.Load(parameters.TemplateConfigurationFile);
 
-            var model = CreateModel(configuration);
+            var model = CreateModel(configuration, startingModel);
 
             var template = File.ReadAllText(this.parameters.TemplateLayoutFile);
             var result = GenerateOutput(model, template);
 
             if (parameters.HandleDirectories)
+            {
                 new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
+                File.WriteAllText(parameters.OutputHtmlPage, result);
+            }
 
-            File.WriteAllText(parameters.OutputHtmlPage, result);
+            return result;
         }
 
         private void CreateOutputDirectory()
@@ -84,10 +96,11 @@ namespace graze
         /// Creates the site's model
         /// </summary>
         /// <param name="configuration">Configuration file</param>
+        /// <param name="startingModel"> </param>
         /// <returns>Model</returns>
-        private ExpandoObject CreateModel(XDocument configuration)
+        private ExpandoObject CreateModel(XDocument configuration, ExpandoObject startingModel)
         {
-            dynamic result = new ExpandoObject();
+            dynamic result = startingModel;
 
             var dataElement = configuration.Element("data");
 
