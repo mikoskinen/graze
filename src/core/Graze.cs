@@ -5,6 +5,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Xml.Linq;
 using Microsoft.VisualBasic.Devices;
 using RazorEngine.Configuration;
@@ -110,33 +111,32 @@ namespace graze
             var elements = from node in dataElement.Elements()
                            select node;
 
-            foreach (var element in elements)
-            {
-                var name = element.Value.ToString(CultureInfo.InvariantCulture);
+            Parallel.ForEach(elements, element =>
+                                           {
+                                               var name = element.Value.ToString(CultureInfo.InvariantCulture);
 
-                foreach (var extra in Extras)
-                {
-                    if (!CanProcess(extra, element))
-                        continue;
+                                               foreach (var extra in Extras)
+                                               {
+                                                   if (!CanProcess(extra, element))
+                                                       continue;
 
-                    var modelExtra = extra.GetExtra(element, result);
+                                                   var modelExtra = extra.GetExtra(element, result);
 
-                    var resultDictionary = modelExtra as IDictionary<string, object>;
-                    var containsMultipleModelProperties = resultDictionary != null;
-                    if (containsMultipleModelProperties)
-                    {
-                        foreach (var keyValuePair in resultDictionary)
-                        {
-                            ((IDictionary<string, object>)result).Add(keyValuePair.Key, keyValuePair.Value);
-                        }
-                    }
-                    else
-                    {
-                        ((IDictionary<string, object>)result).Add(name, modelExtra);
-                    }
-                }
-            }
-
+                                                   var resultDictionary = modelExtra as IDictionary<string, object>;
+                                                   var containsMultipleModelProperties = resultDictionary != null;
+                                                   if (containsMultipleModelProperties)
+                                                   {
+                                                       foreach (var keyValuePair in resultDictionary)
+                                                       {
+                                                           ((IDictionary<string, object>)result).Add(keyValuePair.Key, keyValuePair.Value);
+                                                       }
+                                                   }
+                                                   else
+                                                   {
+                                                       ((IDictionary<string, object>)result).Add(name, modelExtra);
+                                                   }
+                                               }
+                                           });
             return result;
         }
 
