@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Dynamic;
 using System.Globalization;
@@ -111,33 +113,56 @@ namespace graze
             var elements = from node in dataElement.Elements()
                            select node;
 
+            var delayedExecution = new ConcurrentBag<Tuple<IExtra, XElement>>();
+            
             Parallel.ForEach(elements, element =>
                                            {
-                                               var name = element.Value.ToString(CultureInfo.InvariantCulture);
-
                                                foreach (var extra in Extras)
                                                {
                                                    if (!CanProcess(extra, element))
                                                        continue;
 
-                                                   var modelExtra = extra.GetExtra(element, result);
+                                                   if (RequiresDelayedExecution(extra))
+                                                   {
+                                                       delayedExecution.Add(new Tuple<IExtra, XElement>(extra, element));
+                                                       continue;
+                                                   }
 
-                                                   var resultDictionary = modelExtra as IDictionary<string, object>;
-                                                   var containsMultipleModelProperties = resultDictionary != null;
-                                                   if (containsMultipleModelProperties)
-                                                   {
-                                                       foreach (var keyValuePair in resultDictionary)
-                                                       {
-                                                           ((IDictionary<string, object>)result).Add(keyValuePair.Key, keyValuePair.Value);
-                                                       }
-                                                   }
-                                                   else
-                                                   {
-                                                       ((IDictionary<string, object>)result).Add(name, modelExtra);
-                                                   }
+                                                   ProcessExtra(result, element, extra);
                                                }
                                            });
+
+            foreach (var tuple in delayedExecution)
+            {
+                ProcessExtra(result, tuple.Item2, tuple.Item1 );
+            }
+
             return result;
+        }
+
+        private bool RequiresDelayedExecution(IExtra extra)
+        {
+            return extra.GetType().GetCustomAttributes(typeof (DelayedExecutionAttribute), true).Any();
+        }
+
+        private static void ProcessExtra(dynamic result, XElement element, IExtra extra)
+        {
+            var modelExtra = extra.GetExtra(element, result);
+
+            var resultDictionary = modelExtra as IDictionary<string, object>;
+            var containsMultipleModelProperties = resultDictionary != null;
+            if (containsMultipleModelProperties)
+            {
+                foreach (var keyValuePair in resultDictionary)
+                {
+                    ((IDictionary<string, object>) result).Add(keyValuePair.Key, keyValuePair.Value);
+                }
+            }
+            else
+            {
+                var name = element.Value.ToString(CultureInfo.InvariantCulture);
+                ((IDictionary<string, object>)result).Add(name, modelExtra);
+            }
         }
 
         private static bool CanProcess(IExtra extra, XElement element)

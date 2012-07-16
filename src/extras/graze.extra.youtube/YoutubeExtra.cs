@@ -5,7 +5,6 @@ using graze.contracts;
 
 namespace graze.extra.youtube
 {
-    [Export(typeof(IExtra))]
     public class YoutubeExtra : IExtra
     {
         public string KnownElement

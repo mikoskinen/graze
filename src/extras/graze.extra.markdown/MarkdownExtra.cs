@@ -5,7 +5,6 @@ using graze.contracts;
 
 namespace graze.extra.markdown
 {
-    [Export(typeof(IExtra))]
     public class MarkdownExtra : IExtra
     {
         [Import(typeof(IFolderConfiguration))]

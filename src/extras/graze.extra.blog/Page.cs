@@ -15,5 +15,7 @@ namespace graze.extra.childpages
         public string ParentPage { get { return "../index.html"; } }
         public string Slurg { get; set; }
         public string LayoutFile { get; set; }
+        public Page PreviousPage { get; set; }
+        public Page NextPage { get; set; }
     }
 }

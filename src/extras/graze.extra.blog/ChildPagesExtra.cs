@@ -4,13 +4,16 @@ using System.ComponentModel.Composition;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
+using System.Xml;
 using System.Xml.Linq;
+using Microsoft.VisualBasic.Devices;
 using graze.contracts;
 
 namespace graze.extra.childpages
 {
-    [Export(typeof(IExtra))]
+    [DelayedExecutionAttribute]
     public class ChildPagesExtra : IExtra
     {
         [Import(typeof(IFolderConfiguration))]
@@ -19,6 +22,7 @@ namespace graze.extra.childpages
         [Import(typeof(IGenerator))]
         private IGenerator generator;
 
+        private readonly Dictionary<string, Tag> allTags = new Dictionary<string, Tag>();
         private string relativePathPrefix;
 
         public string KnownElement
@@ -26,10 +30,14 @@ namespace graze.extra.childpages
             get { return "ChildPages"; }
         }
 
+        private string defaultLayoutFile;
+        private bool shouldGenerateRss;
+
         public object GetExtra(XElement element, dynamic currentModel)
         {
-            relativePathPrefix = element.Attribute("RelativePathPrefix").Value;
-
+            relativePathPrefix = GetRelativePathPrefix(element);
+            defaultLayoutFile = GetDefaultLayoutFile(element);
+            shouldGenerateRss = GetShouldGenerateRss(element);
             var childPagesFolder = GetChildPagesFolder(element);
 
             var childPagesOutputFolder = element.Value.ToLowerInvariant();
@@ -45,12 +53,51 @@ namespace graze.extra.childpages
 
             CreateTagPages(currentModel, outputFolder, childPagesOutputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagLayoutFile").Value), Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagsIndexLayoutFile").Value));
 
-            GeneratePages(posts, currentModel, outputFolder );
+            GeneratePages(posts.OrderBy(x => x.Time).ToList(), currentModel, outputFolder);
 
-            return posts.OrderBy(x => x.Time).ToList();
+            CopyContent(childPagesFolder, outputFolder);
+
+            var result = new ChildPages
+                             {
+                                 Name = childPagesOutputFolder,
+                                 Pages = posts.OrderBy(x => x.Time).ToList(),
+                                 Tags = allTags.Select(x => x.Value).ToList(),
+
+                             };
+
+            if (shouldGenerateRss)
+                GenerateRss(element, result, outputFolder);
+
+            return result;
         }
 
-        private void CreateTagPages(dynamic currentModel, string outputFolder, string childPagesOutputFolder,  string tagLayoutFile, string tagsIndexLayoutFile)
+        private static string GetRelativePathPrefix(XElement element)
+        {
+            return element.Attribute("RelativePathPrefix").Value;
+        }
+
+        private string GetDefaultLayoutFile(XElement element)
+        {
+            if (element.Attribute("DefaultPageLayoutFile") == null)
+                return null;
+
+            return element.Attribute("DefaultPageLayoutFile").Value;
+        }
+
+        private bool GetShouldGenerateRss(XElement element)
+        {
+            if (element.Attribute("DefaultPageLayoutFile") == null)
+                return false;
+
+            return element.Attribute("RssGenerate").Value == "true";
+        }
+
+        private string GetChildPagesFolder(XElement element)
+        {
+            return Path.Combine(configuration.TemplateRootFolder, element.Attribute("Location") == null ? "pages" : element.Attribute("Location").Value);
+        }
+
+        private void CreateTagPages(dynamic currentModel, string outputFolder, string childPagesOutputFolder, string tagLayoutFile, string tagsIndexLayoutFile)
         {
             var tagsRoot = Path.Combine(outputFolder, "tags");
             Directory.CreateDirectory(tagsRoot);
@@ -88,7 +135,7 @@ namespace graze.extra.childpages
                                                                tag.Location = Path.Combine(@"\", relativePathPrefix, childPagesOutputFolder, "tags", tag.Name).Replace(@"\", @"/");
 
                                                                return tag;
-                                                           }) .ToList());
+                                                           }).ToList());
 
             var tagsIndexPageContent = generator.GenerateOutput(currentModel, tagIndexLayout);
 
@@ -118,13 +165,6 @@ namespace graze.extra.childpages
             modelDictionary.Remove("Pages");
         }
 
-        private string GetChildPagesFolder(XElement element)
-        {
-            return Path.Combine(configuration.TemplateRootFolder, element.Attribute("Location") == null ? "pages" : element.Attribute("Location").Value);
-        }
-
-        private Dictionary<string, Tag> allTags = new Dictionary<string, Tag>();
-
         private Page CreatePage(string file, string childPagesRootFolder)
         {
             var fileContent = File.ReadAllText(file);
@@ -132,13 +172,25 @@ namespace graze.extra.childpages
             var metadata = postContent[1];
             var content = postContent[2];
 
-            var title = metadata.GetTagsValue("title");
-            var permalink = metadata.GetTagsValue("permalink");
-            var description = metadata.GetTagsValue("description");
-            var tags = metadata.GetTagsValue("tags").Split(',').Select(tag => tag.Trim()).ToList();
-            var layout = metadata.GetTagsValue("layout");
+            var meta = metadata.GetTags();
+
+            var title = meta["title"];
+            var permalink = meta["permalink"];
+            var description = meta["description"];
+            var tags = meta["tags"].Split(',').Select(tag => tag.Trim()).ToList();
+
+            var layout = meta.ContainsKey("layout") ? meta["layout"] : defaultLayoutFile;
+
+            if (string.IsNullOrWhiteSpace(layout))
+                throw new ArgumentNullException("Layout", "No layout set either in the post or in the configuration.");
+
             var layoutFile = Path.Combine(configuration.TemplateRootFolder, layout);
-            var time = DateTime.Parse(metadata.GetTagsValue("time"), CultureInfo.InvariantCulture);
+            DateTime time;
+            if (!DateTime.TryParse(meta["time"], CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+            {
+                var parsingTimeFailedPage = string.Format("Parsing time failed. Page {0}, Date {1}", file, meta["time"]);
+                throw new Exception(parsingTimeFailedPage);
+            }
 
             var post = new Page
                            {
@@ -146,7 +198,7 @@ namespace graze.extra.childpages
                                Location = Path.Combine(@"\", relativePathPrefix, childPagesRootFolder, permalink).Replace(@"\", @"/"),
                                Title = title,
                                Time = time,
-                               TagNames =  tags,
+                               TagNames = tags,
                                Slurg = permalink,
                                LayoutFile = layoutFile,
                            };
@@ -175,22 +227,31 @@ namespace graze.extra.childpages
 
                 var value = new Tag { Name = tag, Pages = new List<Page> { post } };
                 allTags.Add(tag, value);
-            } 
+            }
 
             return post;
         }
 
         private void GeneratePages(List<Page> pages, dynamic currentModel, string outputFolder)
         {
-            foreach (Page page in pages)
+            // We are generating pages from the oldest to newest
+            Page previousPage = null;
+
+            for (var i = 0; i < pages.Count; i++)
             {
+                var page = pages[i];
                 page.Tags = new List<Tag>();
+
                 foreach (var tagName in page.TagNames)
                 {
                     page.Tags.Add(allTags[tagName]);
                 }
 
+                page.PreviousPage = previousPage;
+                page.NextPage = pages.Count > i + 1 ? pages[i + 1] : null;
+
                 GeneratePage(page, currentModel, outputFolder);
+                previousPage = page;
             }
         }
 
@@ -214,5 +275,57 @@ namespace graze.extra.childpages
 
             modelDictionary.Remove("Page");
         }
+
+        private void CopyContent(string childPagesFolder, string outputFolder)
+        {
+            var contentSourceFolder = Path.Combine(childPagesFolder, "content");
+
+            if (!Directory.Exists(contentSourceFolder))
+                return;
+
+            var contentOutputFolder = Path.Combine(outputFolder, "content");
+
+            new Computer().FileSystem.CopyDirectory(contentSourceFolder, contentOutputFolder);
+        }
+
+        private void GenerateRss(XElement element, ChildPages result, string outputFolder)
+        {
+            var rssUri = element.Attribute("RssUri").Value;
+            var rssFeedName = element.Attribute("RssFeedName").Value;
+            var rssAuthor = element.Attribute("RssAuthor").Value;
+            var rssDescription = element.Attribute("RssDescription").Value;
+
+            var feed = new SyndicationFeed(rssFeedName, rssDescription, new Uri(rssUri));
+            feed.Authors.Add(new SyndicationPerson(rssAuthor));
+            var feedItems = new List<SyndicationItem>();
+
+            foreach (var page in result.Pages.Take(20))
+            {
+                var itemUri = rssUri + page.Location;
+                var item = new SyndicationItem(page.Title, page.Content, new Uri(itemUri));
+                item.PublishDate = new DateTimeOffset(page.Time);
+                item.Id = page.Slurg;
+
+                foreach (var tag in page.Tags)
+                {
+                    item.Categories.Add(new SyndicationCategory(tag.Name));
+                }
+
+                feedItems.Add(item);
+            }
+
+            feed.Items = feedItems;
+
+            var settings = new XmlWriterSettings { Indent = true, IndentChars = "\t" };
+
+            var feedLocation = Path.Combine(outputFolder, "rss.xml");
+            using (var writer = XmlWriter.Create(feedLocation, settings))
+            {
+                feed.SaveAsRss20(writer);
+            }
+
+            result.Rss = result.Name + "/" + "rss.xml";
+        }
+
     }
 }

@@ -44,8 +44,8 @@
     <h2>Youtube example:</h2>
     @Model.IRC7Movie
     
-    <h2>Child pages example:</h2>
-        @foreach (var post in Model.ChildPages)
+    <h2><a href="@Model.ChildPages.Location">Child pages example:</a></h2>
+        @foreach (var post in Model.ChildPages.Pages)
         {
             <li><a href="@post.Location" target="_blan">@post.Title</a></li>
         }

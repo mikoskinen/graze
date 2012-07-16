@@ -7,7 +7,6 @@ using graze.contracts;
 
 namespace graze.extras
 {
-    [Export(typeof(IExtra))]
     public class SiteExtra : IExtra
     {
         public string KnownElement

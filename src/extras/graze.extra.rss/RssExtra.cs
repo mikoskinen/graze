@@ -7,7 +7,6 @@ using graze.contracts;
 
 namespace graze.extra.rss
 {
-    [Export(typeof(IExtra))]
     public class RssExtra : IExtra
     {
         public string KnownElement

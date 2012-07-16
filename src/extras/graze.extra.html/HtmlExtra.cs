@@ -1,11 +1,9 @@
-﻿using System.ComponentModel.Composition;
-using System.Net;
+﻿using System.Net;
 using System.Xml.Linq;
 using graze.contracts;
 
 namespace graze.extra.html
 {
-    [Export(typeof(IExtra))]
     public class HtmlExtra : IExtra
     {
         public string KnownElement
