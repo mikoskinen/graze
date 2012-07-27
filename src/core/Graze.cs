@@ -12,6 +12,7 @@ using System.Xml.Linq;
 using Microsoft.VisualBasic.Devices;
 using RazorEngine.Configuration;
 using RazorEngine.Templating;
+using RazorEngine.Text;
 using graze.contracts;
 
 namespace graze
@@ -72,10 +73,10 @@ namespace graze
             var result = GenerateOutput(model, template);
 
             if (parameters.HandleDirectories)
-            {
                 new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
+            
+            if (parameters.CopyOutputFile)
                 File.WriteAllText(parameters.OutputHtmlPage, result);
-            }
 
             return result;
         }
@@ -172,8 +173,16 @@ namespace graze
 
         public static string GenerateOutput(ExpandoObject model, string template)
         {
-            var config = new FluentTemplateServiceConfiguration(
-                c => c.WithEncoding(RazorEngine.Encoding.Raw));
+            var config = new TemplateServiceConfiguration
+                             {
+                                 EncodedStringFactory = new RawStringFactory(),
+                                 Resolver = new DelegateTemplateResolver(name =>
+                                                                             {
+                                                                                 var file = name;
+                                                                                 var content = File.ReadAllText(file);
+                                                                                 return content;
+                                                                             })
+                             };
 
             string result;
             using (var service = new TemplateService(config))
@@ -195,13 +204,20 @@ namespace graze
                 private set { handleDirectories = value; }
             }
 
+            private bool copyOutputFile = true;
+            public bool CopyOutputFile
+            {
+                get { return copyOutputFile; }
+                private set { copyOutputFile = value; }
+            }
+
             public string TemplateConfigurationFile { get; private set; }
             public string TemplateLayoutFile { get; private set; }
             public string TemplateAssetsFolder { get; private set; }
             public string OutputHtmlPage { get; private set; }
             public string OutputAssetsFolder { get; private set; }
 
-            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string layoutFile, string outputPage)
+            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string layoutFile, string outputPage, bool copyOutputFile)
                 : this(templateRoot ?? defaultTemplateRoot,
                     outputRoot ?? defaultOutputRoot,
                     handleDirectories,
@@ -209,9 +225,10 @@ namespace graze
                     layoutFile ?? Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile),
                     Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
                     outputPage ?? Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
-                    Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder)) { }
+                    Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder),
+                   copyOutputFile) { }
 
-            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder)
+            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder, bool copyOutputFile)
             {
                 TemplateRoot = templateRoot;
                 OutputRoot = outputRoot;
@@ -221,11 +238,12 @@ namespace graze
                 TemplateAssetsFolder = templateAssetsFolder;
                 OutputHtmlPage = outputHtmlPage;
                 OutputAssetsFolder = outputAssetsFolder;
+                CopyOutputFile = copyOutputFile;
             }
 
             public static Parameters Default
             {
-                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot, true, null, null); }
+                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot, true, null, null, true); }
             }
 
             private const string defaultTemplateRoot = "template";

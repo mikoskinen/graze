@@ -12,7 +12,7 @@ namespace graze.extra.childpages
         public string Content { get; set; }
         public string Location { get; set; }
         public DateTime Time { get; set; }
-        public string ParentPage { get { return "../index.html"; } }
+        public string ParentPage { get; set; }
         public string Slurg { get; set; }
         public string LayoutFile { get; set; }
         public Page PreviousPage { get; set; }

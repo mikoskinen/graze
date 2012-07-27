@@ -152,8 +152,16 @@ namespace graze.extra.childpages
             if (modelDictionary.ContainsKey("Pages"))
                 modelDictionary.Remove("Pages");
 
-            modelDictionary.Add("Pages", pages);
+            if (modelDictionary.ContainsKey("PagesDesc"))
+                modelDictionary.Remove("PagesDesc");
 
+            if (modelDictionary.ContainsKey("PagesAsc"))
+                modelDictionary.Remove("PagesAsc");
+
+            modelDictionary.Add("Pages", pages);
+            modelDictionary.Add("PagesDesc", pages.OrderByDescending(x => x.Time).ToList());
+            modelDictionary.Add("PagesAsc", pages.OrderBy(x => x.Time).ToList());
+         
             var indexFileLocation = Path.Combine(outputFolder, "index.html");
 
             var layoutContent = File.ReadAllText(layoutFile);
@@ -163,6 +171,8 @@ namespace graze.extra.childpages
             File.WriteAllText(indexFileLocation, staticPage);
 
             modelDictionary.Remove("Pages");
+            modelDictionary.Remove("PagesDesc");
+            modelDictionary.Remove("PagesAsc");
         }
 
         private Page CreatePage(string file, string childPagesRootFolder)
@@ -201,6 +211,7 @@ namespace graze.extra.childpages
                                TagNames = tags,
                                Slurg = permalink,
                                LayoutFile = layoutFile,
+                               ParentPage = Path.Combine("/", relativePathPrefix, childPagesRootFolder)
                            };
 
             var options = new MarkdownOptions

@@ -24,11 +24,7 @@ namespace graze.extra.childpages
 
         public static Dictionary<string, string> GetTags(this string content)
         {
-            Console.WriteLine(content);
-
             var metaLines = content.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
-
-            Console.WriteLine("Meta lines: " + metaLines.Length);
 
             var tags = new Dictionary<string, string>();
 
@@ -40,8 +36,6 @@ namespace graze.extra.childpages
                 var value = metaLine.Substring(metaLine.IndexOf(":") + 1).Trim();
 
                 tags.Add(key, value);
-
-                Console.WriteLine(key + " - " + value);
             }
 
             return tags;

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
+using System.Reflection;
 using Mono.Options;
 
 namespace graze
@@ -41,7 +42,6 @@ namespace graze
             }
         }
 
-
         static Core.Parameters GetParameters(IEnumerable<string> args)
         {
             string templateRoot = null;
@@ -51,6 +51,7 @@ namespace graze
 
             var shopHelp = false;
             var copyAssets = true;
+            var copyFile = true;
 
             var options = new OptionSet
                               {
@@ -60,6 +61,7 @@ namespace graze
                                       {"of|outputfile=", "The output file which is generated.", v => outputFile = v},
                                       { "h|help",  "Show this message and exit", v => shopHelp = true},
                                       { "s|skip",  "Skip directory creation and asset-folder copy", v => copyAssets = false},
+                                      { "sf|skipfile",  "Skip output file copy", v => copyFile = true},
                                   };
 
             options.Parse(args);
@@ -73,8 +75,7 @@ namespace graze
                 Environment.Exit(0);
             }
 
-            return new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile);
-
+            return new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile, copyFile);
         }
     }
 
