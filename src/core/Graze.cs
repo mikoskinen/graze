@@ -116,7 +116,7 @@ namespace graze
 
             var delayedExecution = new ConcurrentBag<Tuple<IExtra, XElement>>();
             
-            Parallel.ForEach(elements, element =>
+            Parallel.ForEach(elements, new ParallelOptions { MaxDegreeOfParallelism = parameters.MaxDegreeOfParallelism }, element =>
                                            {
                                                foreach (var extra in Extras)
                                                {
@@ -216,6 +216,7 @@ namespace graze
             public string TemplateAssetsFolder { get; private set; }
             public string OutputHtmlPage { get; private set; }
             public string OutputAssetsFolder { get; private set; }
+            public int MaxDegreeOfParallelism { get; private set; }
 
             public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string layoutFile, string outputPage, bool copyOutputFile)
                 : this(templateRoot ?? defaultTemplateRoot,
@@ -226,9 +227,10 @@ namespace graze
                     Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
                     outputPage ?? Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
                     Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder),
-                   copyOutputFile) { }
+                   copyOutputFile, 4) { }
 
-            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder, bool copyOutputFile)
+            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder,
+                bool copyOutputFile, int maxDegreeOfParallelism)
             {
                 TemplateRoot = templateRoot;
                 OutputRoot = outputRoot;
@@ -239,6 +241,7 @@ namespace graze
                 OutputHtmlPage = outputHtmlPage;
                 OutputAssetsFolder = outputAssetsFolder;
                 CopyOutputFile = copyOutputFile;
+                MaxDegreeOfParallelism = maxDegreeOfParallelism;
             }
 
             public static Parameters Default
