@@ -13,6 +13,8 @@ The static site (index.html) is generated into the output folder.
 
 h2. NuGet
 
+Note 5.5.2013: The NuGet packe is currently out of date. We recommend you to download the zip-file.
+
 Graze is also available from the NuGet. To get started, first create a new "Empty Project" with Visual Studio and then add the Graze using NuGet. Graze.exe and the template-folder are installed into the root of your project.
 
 <pre>
