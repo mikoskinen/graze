@@ -23,9 +23,7 @@ Install-Package graze
 
 h2. Examples
 
-"The GrazeWP7":https://github.com/mikoskinen/grazewp7/ uses Graze to generate marketing sites for Windows Phone 7 applications.
-
-!http://mikaelkoskinen.net/image.axd?picture=screenshot_small.png!
+"Adafy Oy website":http://www.adafy.com/ uses Graze to generate the pages and RSS feed.
 
 h3. Graze templates
 
