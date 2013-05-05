@@ -8,10 +8,11 @@
       <Feature>Dynamic data models created in XML.</Feature>
       <Feature>Supports complex data models and arrays.</Feature>
       <Feature>Fast static site generation.</Feature>
+      <Feature>Support for layout files.</Feature>
       <Feature>Pure HTML / CSS / Javascript output. Host in Apache, IIS etc.</Feature>
     </Features>
     <Files>
-      <File Location="assets/example/layout.txt">This layout.</File>
+      <File Location="assets/example/layout.txt">This template.</File>
       <File Location="assets/example/configuration.txt">The configuration.</File>
     </Files>
     <Links>
@@ -20,8 +21,9 @@
     </Links>
   </site>
   <Markdown Location="pages/help.md">Help</Markdown>
-  <Rss Url="http://feeds.feedburner.com/mikaelkoskinen">Blog</Rss>
+  <Rss Url="http://mikaelkoskinen.net/atom">Blog</Rss>
   <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
   <ChildPages Location="childpages" DefaultPageLayoutFile="post.cshtml" IndexLayoutFile="pagesindex.cshtml" 
-              TagsIndexLayoutFile="tagsindex.cshtml" TagLayoutFile="tag.cshtml" RelativePathPrefix="" RssGenerate="true" RssFeedName="Graze Blog" RssUri="http://www.adafy.com" RssAuthor="info@adafy.com" RssDescription="RSS Feed for Graze">ChildPages</ChildPages>
+              TagsIndexLayoutFile="tagsindex.cshtml" TagLayoutFile="tag.cshtml" RelativePathPrefix="" RssGenerate="true" 
+              RssFeedName="Graze Blog" RssUri="http://www.adafy.com" RssAuthor="info@adafy.com" RssDescription="RSS Feed for Graze">ChildPages</ChildPages>
 </data>

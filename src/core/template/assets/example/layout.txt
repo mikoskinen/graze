@@ -1,47 +1,52 @@
-﻿<html>
-<head>
-    <title>@Model.Title</title>
-</head>
-<body>
-    <h1>@Model.Description</h1>
-    <h2>
-        Features:</h2>
-    <ul>
-        @foreach (var feature in Model.Features)
-        {
-            <li>@feature</li>
-        }
-    </ul>
-    <h2>
-        Example:</h2>
-    <ul>
-        @foreach (var file in Model.Files)
-        {
-            <li><a href="@file.Location">@file.File</a></li>
-        }
-    </ul>
-    <h2>
-        Links:</h2>
-    @foreach (var link in Model.Links)
+﻿@{
+    _Layout = "./template/Layout.cshtml";
+}
+
+<h1>@Model.Description</h1>
+<h2>Features:</h2>
+
+<ul>
+    @foreach (var feature in Model.Features)
     {
-        <p>
-            <a target="_blank" href="@link.Url">@link.Link</a>
-        </p>
+        <li>@feature</li>
     }
-    <h2>
-        Markdown example:</h2>
-    @Model.Help
-    <h2>
-        Rss example:</h2>
-        
-    <a href="@Model.Blog.Links[0].Uri"> @Model.Blog.Title.Text</a>
-    <ul>
-        @foreach (var rssPost in Model.Blog.Items)
-        {
-            <li><a href="@rssPost.Id" target="_blan">@rssPost.Title.Text</a></li>
-        }
-    </ul>
-    <h2>Youtube example:</h2>
-    @Model.IRC7Movie
-</body>
-</html>
+</ul>
+
+<h2>Example:</h2>
+<ul>
+    @foreach (var file in Model.Files)
+    {
+        <li>
+            <a href="@file.Location">@file.File</a></li>
+    }
+</ul>
+<h2>Links:</h2>
+@foreach (var link in Model.Links)
+{
+    <p>
+        <a target="_blank" href="@link.Url">@link.Link</a>
+    </p>
+}
+
+<h2>Markdown example:</h2>
+@Model.Help
+
+<h2>Rss example:</h2>
+<a href="@Model.Blog.Links[0].Uri">@Model.Blog.Title.Text</a>
+<ul>
+    @foreach (var rssPost in Model.Blog.Items)
+    {
+        <li>
+            <a href="@rssPost.Id" target="_blank">@rssPost.Title.Text</a></li>
+    }
+</ul>
+
+<h2>Youtube example:</h2>
+@Model.IRC7Movie
+
+<h2><a href="@Model.ChildPages.Location">Child pages example:</a></h2>
+
+@foreach (var post in Model.ChildPages.Pages)
+{
+    <li><a href="@post.Location" target="_blan">@post.Title</a></li>
+}
