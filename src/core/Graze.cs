@@ -173,6 +173,11 @@ namespace graze
 
         public static string GenerateOutput(ExpandoObject model, string template)
         {
+			if (model == null)
+				throw new ArgumentNullException("model");
+			if (template == null)
+				throw new ArgumentNullException("template");
+
             var config = new TemplateServiceConfiguration
                              {
                                  EncodedStringFactory = new RawStringFactory(),
