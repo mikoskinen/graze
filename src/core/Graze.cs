@@ -21,7 +21,7 @@ namespace graze
     [Export(typeof(IGenerator))]
     public class Core : IFolderConfiguration, IGenerator
     {
-        private readonly Parameters parameters;
+        private readonly GrazeParameters parameters;
 
         [ImportMany(typeof(IExtra))]
         public IEnumerable<IExtra> Extras { get; set; }
@@ -37,11 +37,11 @@ namespace graze
         }
 
         public Core()
-            : this(Parameters.Default)
+            : this(GrazeParameters.Default)
         {
         }
 
-        public Core(Parameters parameters)
+        public Core(GrazeParameters parameters)
         {
             this.parameters = parameters;
 
@@ -191,70 +191,6 @@ namespace graze
             }
 
             return result;
-        }
-
-        public class Parameters
-        {
-            public string TemplateRoot { get; private set; }
-            public string OutputRoot { get; private set; }
-            private bool handleDirectories = true;
-            public bool HandleDirectories
-            {
-                get { return handleDirectories; }
-                private set { handleDirectories = value; }
-            }
-
-            private bool copyOutputFile = true;
-            public bool CopyOutputFile
-            {
-                get { return copyOutputFile; }
-                private set { copyOutputFile = value; }
-            }
-
-            public string TemplateConfigurationFile { get; private set; }
-            public string TemplateLayoutFile { get; private set; }
-            public string TemplateAssetsFolder { get; private set; }
-            public string OutputHtmlPage { get; private set; }
-            public string OutputAssetsFolder { get; private set; }
-            public int MaxDegreeOfParallelism { get; private set; }
-
-            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string layoutFile, string outputPage, bool copyOutputFile)
-                : this(templateRoot ?? defaultTemplateRoot,
-                    outputRoot ?? defaultOutputRoot,
-                    handleDirectories,
-                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultConfigurationFile),
-                    layoutFile ?? Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile),
-                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
-                    outputPage ?? Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
-                    Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder),
-                   copyOutputFile, 4) { }
-
-            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder,
-                bool copyOutputFile, int maxDegreeOfParallelism)
-            {
-                TemplateRoot = templateRoot;
-                OutputRoot = outputRoot;
-                HandleDirectories = handleDirectories;
-                TemplateConfigurationFile = templateConfigurationFile;
-                TemplateLayoutFile = templateLayoutFile;
-                TemplateAssetsFolder = templateAssetsFolder;
-                OutputHtmlPage = outputHtmlPage;
-                OutputAssetsFolder = outputAssetsFolder;
-                CopyOutputFile = copyOutputFile;
-                MaxDegreeOfParallelism = maxDegreeOfParallelism;
-            }
-
-            public static Parameters Default
-            {
-                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot, true, null, null, true); }
-            }
-
-            private const string defaultTemplateRoot = "template";
-            private const string defaultOutputRoot = "output";
-            private const string defaultConfigurationFile = "configuration.xml";
-            private const string defaultLayoutFile = "index.cshtml";
-            private const string defaultAssetsFolder = "assets";
-            private const string defaultOutputPage = "index.html";
         }
 
         string IGenerator.GenerateOutput(ExpandoObject model, string template)

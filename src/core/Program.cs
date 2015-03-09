@@ -42,7 +42,7 @@ namespace graze
             }
         }
 
-        static Core.Parameters GetParameters(IEnumerable<string> args)
+        static GrazeParameters GetParameters(IEnumerable<string> args)
         {
             string templateRoot = null;
             string outputRoot = null;
@@ -75,7 +75,7 @@ namespace graze
                 Environment.Exit(0);
             }
 
-            return new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile, copyFile);
+            return new GrazeParameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile, copyFile);
         }
     }
 
