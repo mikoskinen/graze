@@ -24,6 +24,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.youtube", "extr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.childpages", "extras\graze.extra.blog\graze.extra.childpages.csproj", "{85424E37-383C-40D8-8A65-671480826B2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.msbuild", "msbuild\graze.msbuild.csproj", "{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +60,10 @@ Global
 		{85424E37-383C-40D8-8A65-671480826B2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{85424E37-383C-40D8-8A65-671480826B2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{85424E37-383C-40D8-8A65-671480826B2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
