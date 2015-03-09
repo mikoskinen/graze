@@ -55,7 +55,7 @@
 				Log.LogMessage("{0} -graze-> {1}", this.MSBuildProjectName, parameters.OutputRoot);
 				return true;
 			} catch (Exception ex) {
-				Console.Error.WriteLine(ex.ToString());
+				Log.LogErrorFromException(ex);
 
 				return false;
 			}
