@@ -61,7 +61,7 @@
 			this.WithAssemblyResolveHack(() => core.Run());
 
 			var fullOutputPath = Path.GetFullPath(parameters.OutputRoot);
-			Log.LogMessage("graze -> {1}", fullOutputPath);
+			Log.LogMessage(MessageImportance.High, "graze -> {0}", fullOutputPath);
 			return true;
 		}
 
