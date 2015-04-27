@@ -1,5 +1,6 @@
 ﻿namespace graze.extra.page
 {
+	using System.Collections.Generic;
 	using System.ComponentModel.Composition;
 	using System.IO;
 	using System.Xml.Linq;
@@ -41,7 +42,7 @@
 
 			File.WriteAllText(Path.Combine(Configuration.OutputRootFolder, outputFileName), output);
 
-			return null;
+			return new Dictionary<string, object>();
 		}
 	}
 }
