@@ -29,14 +29,14 @@
 				return null;
 
 			var outputPath = element.Attribute("Output");
-			var outputFileName = element == null
-				? Path.ChangeExtension(Path.GetFileName(layoutPath.Value), "*.html")
-				: element.Value;
+			var outputFileName = outputPath == null
+				? Path.ChangeExtension(Path.GetFileName(layoutPath.Value), "html")
+				: outputPath.Value;
 
 			var outputFolder = Configuration.OutputRootFolder;
 			Directory.CreateDirectory(outputFolder);
 
-			var template = File.ReadAllText(layoutPath.Value);
+			var template = File.ReadAllText(Path.Combine(Configuration.TemplateRootFolder, layoutPath.Value));
 			var output = Generator.GenerateOutput(currentModel, template);
 
 			File.WriteAllText(Path.Combine(Configuration.OutputRootFolder, outputFileName), output);
