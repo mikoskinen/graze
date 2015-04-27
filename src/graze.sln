@@ -26,6 +26,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.childpages", "e
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.msbuild", "msbuild\graze.msbuild.csproj", "{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.page", "extras\graze.extra.page\graze.extra.page.csproj", "{68932133-DC0D-4619-B4F0-FE6A1D503E84}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +66,10 @@ Global
 		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0A38FCED-77EB-48E5-A0C8-C2A48D3FDDB5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{68932133-DC0D-4619-B4F0-FE6A1D503E84}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{68932133-DC0D-4619-B4F0-FE6A1D503E84}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{68932133-DC0D-4619-B4F0-FE6A1D503E84}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{68932133-DC0D-4619-B4F0-FE6A1D503E84}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
