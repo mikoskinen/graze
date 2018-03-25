@@ -21,7 +21,7 @@
     </Links>
   </site>
   <Markdown Location="pages/help.md">Help</Markdown>
-  <Rss Url="http://www.adafy.com/news/rss.xml">Blog</Rss>
+  <Rss Url="http://mikaelkoskinen.net/feed/rss">Blog</Rss>
   <Youtube Url="http://www.youtube.com/embed/Ws8-PKO0i_k" Width="560" Height="315">IRC7Movie</Youtube>
   <ChildPages Location="childpages" DefaultPageLayoutFile="post.cshtml" IndexLayoutFile="pagesindex.cshtml" 
               TagsIndexLayoutFile="tagsindex.cshtml" TagLayoutFile="tag.cshtml" RelativePathPrefix="" RssGenerate="true" 
