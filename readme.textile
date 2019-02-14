@@ -21,10 +21,6 @@ Install-Package graze
 </code>
 </pre>
 
-h2. Examples
-
-"Adafy Oy website":http://www.adafy.com/ uses Graze to generate the pages and RSS feed.
-
 h3. Graze templates
 
 The Graze templates are created using the Razor syntax. Here's an example:
