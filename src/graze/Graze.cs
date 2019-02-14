@@ -9,11 +9,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.VisualBasic.Devices;
-using RazorEngine.Configuration;
-using RazorEngine.Templating;
-using RazorEngine.Text;
+//using RazorEngine.Configuration;
+//using RazorEngine.Templating;
+//using RazorEngine.Text;
 using graze.contracts;
+using RazorLight;
 
 namespace graze
 {
@@ -69,12 +69,14 @@ namespace graze
 
             var model = CreateModel(configuration, startingModel);
 
-            var template = File.ReadAllText(this.parameters.TemplateLayoutFile);
-            var result = GenerateOutput(model, template);
+            var template = File.ReadAllText(parameters.TemplateLayoutFile);
+            var result = GenerateOutput(model, template, parameters.TemplateRoot);
 
             if (parameters.HandleDirectories)
-                new Computer().FileSystem.CopyDirectory(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
-            
+            {
+                common.DirCopy.Copy(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
+            }
+
             if (parameters.CopyOutputFile)
                 File.WriteAllText(parameters.OutputHtmlPage, result);
 
@@ -171,24 +173,21 @@ namespace graze
             return element != null && element.Name.LocalName.Equals(extra.KnownElement);
         }
 
-        public static string GenerateOutput(ExpandoObject model, string template)
+        public static string GenerateOutput(ExpandoObject model, string template, string templateRoot)
         {
-            var config = new TemplateServiceConfiguration
-                             {
-                                 EncodedStringFactory = new RawStringFactory(),
-                                 Resolver = new DelegateTemplateResolver(name =>
-                                                                             {
-                                                                                 var file = name;
-                                                                                 var content = File.ReadAllText(file);
-                                                                                 return content;
-                                                                             })
-                             };
+            // 14.2.2019 
+            // Converted from RazorEngine to RazorLight. Caused two breaking changes:
+            // 1. HTML is encoded by default and it can't be controlled through options, only through layout files.
+            // 2. Have to use Layout instead of _Layout.
 
-            string result;
-            using (var service = new TemplateService(config))
-            {
-                result = service.Parse(template, model);
-            }
+            var currentLocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
+            var templateRootPath = Path.Combine(currentLocation, templateRoot);
+
+            var engine = new RazorLightEngineBuilder()
+                .UseFilesystemProject(templateRootPath)
+                .Build();
+
+            var result = engine.CompileRenderAsync("notNeeded", template, model, model).Result;
 
             return result;
         }
@@ -259,7 +258,7 @@ namespace graze
 
         string IGenerator.GenerateOutput(ExpandoObject model, string template)
         {
-            return GenerateOutput(model, template);
+            return GenerateOutput(model, template, parameters.TemplateRoot);
         }
     }
 }

@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.ComponentModel.Composition.Hosting;
 using System.Diagnostics;
-using System.Reflection;
 using Mono.Options;
 
 namespace graze
@@ -78,5 +77,4 @@ namespace graze
             return new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile, copyFile);
         }
     }
-
 }

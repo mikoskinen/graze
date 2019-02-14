@@ -1,15 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze", "core\graze.csproj", "{DB34292C-2434-49A3-BAA2-1BCA8E28064A}"
-	ProjectSection(ProjectDependencies) = postProject
-		{BEEF4C01-F510-412C-BD4E-B94B4392309B} = {BEEF4C01-F510-412C-BD4E-B94B4392309B}
-		{85424E37-383C-40D8-8A65-671480826B2D} = {85424E37-383C-40D8-8A65-671480826B2D}
-		{5AF7BC55-BE58-4D3A-A36D-657EC1F0256A} = {5AF7BC55-BE58-4D3A-A36D-657EC1F0256A}
-		{4926625A-0D71-4DAA-9ABA-D361CAA736DF} = {4926625A-0D71-4DAA-9ABA-D361CAA736DF}
-		{AA283C88-6951-4C06-8A5D-D6F3B2B7E4E3} = {AA283C88-6951-4C06-8A5D-D6F3B2B7E4E3}
-	EndProjectSection
-EndProject
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.28307.329
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.contracts", "contracts\graze.contracts.csproj", "{8151C0F4-F069-4CB0-8D7C-B835DF063E22}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.markdown", "extras\graze.extra.markdown\graze.extra.markdown.csproj", "{AA283C88-6951-4C06-8A5D-D6F3B2B7E4E3}"
@@ -22,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.youtube", "extr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze.extra.childpages", "extras\graze.extra.blog\graze.extra.childpages.csproj", "{85424E37-383C-40D8-8A65-671480826B2D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "graze", "graze\graze.csproj", "{F8CC8435-AF7F-4E06-9150-B5153CD76B04}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -32,16 +27,6 @@ Global
 		Release|x86 = Release|x86
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Debug|x86.ActiveCfg = Debug|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Debug|x86.Build.0 = Debug|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Release|Any CPU.ActiveCfg = Release|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Release|Mixed Platforms.Build.0 = Release|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Release|x86.ActiveCfg = Release|x86
-		{DB34292C-2434-49A3-BAA2-1BCA8E28064A}.Release|x86.Build.0 = Release|x86
 		{8151C0F4-F069-4CB0-8D7C-B835DF063E22}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{8151C0F4-F069-4CB0-8D7C-B835DF063E22}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8151C0F4-F069-4CB0-8D7C-B835DF063E22}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
@@ -102,11 +87,24 @@ Global
 		{85424E37-383C-40D8-8A65-671480826B2D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{85424E37-383C-40D8-8A65-671480826B2D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{85424E37-383C-40D8-8A65-671480826B2D}.Release|x86.ActiveCfg = Release|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Debug|x86.Build.0 = Debug|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Release|x86.ActiveCfg = Release|Any CPU
+		{F8CC8435-AF7F-4E06-9150-B5153CD76B04}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		EnterpriseLibraryConfigurationToolBinariesPath = packages\Unity.2.1.505.0\lib\NET35
+		SolutionGuid = {C7D98B45-2D61-4E55-AC5F-F932E2CE9880}
 	EndGlobalSection
 EndGlobal

@@ -8,7 +8,7 @@
     <id>graze</id>
     <title>Graze</title>
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
-    <description>Graze is a static site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the Razor Syntax. Use an empty Visual Studio project as a starting point.</description>
+    <description>Graze is a static web site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the Razor Syntax. Use an empty Visual Studio project as a starting point.</description>
     <copyright>Mikael Koskinen</copyright>
     <tags>generator website site graze template templating templatingengine</tags>
   </metadata>

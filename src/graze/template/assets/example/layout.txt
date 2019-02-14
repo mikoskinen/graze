@@ -1,5 +1,5 @@
 ﻿@{
-    _Layout = "./template/Layout.cshtml";
+    Layout = "./template/Layout.cshtml";
 }
 
 <h1>@Model.Description</h1>

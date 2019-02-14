@@ -8,8 +8,9 @@ using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
-using Microsoft.VisualBasic.Devices;
+using graze.common;
 using graze.contracts;
+using MarkdownSharp;
 
 namespace graze.extra.childpages
 {
@@ -58,12 +59,12 @@ namespace graze.extra.childpages
             CopyContent(childPagesFolder, outputFolder);
 
             var result = new ChildPages
-                             {
-                                 Name = childPagesOutputFolder,
-                                 Pages = posts.OrderBy(x => x.Time).ToList(),
-                                 Tags = allTags.Select(x => x.Value).ToList(),
+            {
+                Name = childPagesOutputFolder,
+                Pages = posts.OrderBy(x => x.Time).ToList(),
+                Tags = allTags.Select(x => x.Value).ToList(),
 
-                             };
+            };
 
             if (shouldGenerateRss)
                 GenerateRss(element, result, outputFolder);
@@ -161,7 +162,7 @@ namespace graze.extra.childpages
             modelDictionary.Add("Pages", pages);
             modelDictionary.Add("PagesDesc", pages.OrderByDescending(x => x.Time).ToList());
             modelDictionary.Add("PagesAsc", pages.OrderBy(x => x.Time).ToList());
-         
+
             var indexFileLocation = Path.Combine(outputFolder, "index.html");
 
             var layoutContent = File.ReadAllText(layoutFile);
@@ -203,23 +204,22 @@ namespace graze.extra.childpages
             }
 
             var post = new Page
-                           {
-                               Description = description,
-                               Location = Path.Combine(@"\", relativePathPrefix, childPagesRootFolder, permalink).Replace(@"\", @"/"),
-                               Title = title,
-                               Time = time,
-                               TagNames = tags,
-                               Slurg = permalink,
-                               LayoutFile = layoutFile,
-                               ParentPage = Path.Combine("/", relativePathPrefix, childPagesRootFolder)
-                           };
+            {
+                Description = description,
+                Location = Path.Combine(@"\", relativePathPrefix, childPagesRootFolder, permalink).Replace(@"\", @"/"),
+                Title = title,
+                Time = time,
+                TagNames = tags,
+                Slurg = permalink,
+                LayoutFile = layoutFile,
+                ParentPage = Path.Combine("/", relativePathPrefix, childPagesRootFolder)
+            };
 
             var options = new MarkdownOptions
             {
                 AutoHyperlink = true,
                 AutoNewlines = true,
                 EmptyElementSuffix = "/>",
-                EncodeProblemUrlCharacters = false,
                 LinkEmails = true,
                 StrictBoldItalic = true
             };
@@ -296,7 +296,7 @@ namespace graze.extra.childpages
 
             var contentOutputFolder = Path.Combine(outputFolder, "content");
 
-            new Computer().FileSystem.CopyDirectory(contentSourceFolder, contentOutputFolder);
+            DirCopy.Copy(contentSourceFolder, contentOutputFolder);
         }
 
         private void GenerateRss(XElement element, ChildPages result, string outputFolder)
@@ -337,6 +337,5 @@ namespace graze.extra.childpages
 
             result.Rss = result.Name + "/" + "rss.xml";
         }
-
     }
 }

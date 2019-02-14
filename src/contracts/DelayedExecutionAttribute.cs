@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 
 namespace graze.contracts
 {
@@ -8,3 +8,4 @@ namespace graze.contracts
     [AttributeUsage(AttributeTargets.Class)]
     public class DelayedExecutionAttribute : Attribute { }
 }
+
