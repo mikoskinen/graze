@@ -11,6 +11,14 @@
     <description>Graze is a static web site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the Razor Syntax. Use an empty Visual Studio project as a starting point.</description>
     <copyright>Mikael Koskinen</copyright>
     <tags>generator website site graze template templating templatingengine</tags>
+    <dependencies>
+      <group targetFramework=".NETCoreApp2.2">
+        <dependency id="RazorLight" version="[2.0.0-beta1]" exclude="[Build,Analyzers" />
+        <dependency id="System.ComponentModel.Composition" version="[4.5.0]" exclude="Build,Analyzers" />
+        <dependency id="System.ServiceModel.Syndication" version="[4.5.0]" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encoding.CodePages" version="[4.5.0]" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>	
   </metadata>
   <files>
     <file src="..\src\graze\bin\template\assets\example\configuration.txt" target="content\template\assets\example\configuration.txt" />
