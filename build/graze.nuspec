@@ -13,22 +13,20 @@
     <tags>generator website site graze template templating templatingengine</tags>
   </metadata>
   <files>
-    <file src="..\src\core\bin\template\assets\example\configuration.txt" target="content\template\assets\example\configuration.txt" />
-    <file src="..\src\core\bin\template\assets\example\layout.txt" target="content\template\assets\example\layout.txt" />
-    <file src="..\src\core\bin\template\assets\readme.txt" target="content\template\assets\readme.txt" />
-    <file src="..\src\core\bin\template\configuration.xml" target="content\template\configuration.xml" />
-    <file src="..\src\core\bin\template\index.cshtml" target="content\template\index.cshtml" />
-    <file src="..\src\core\bin\template\pages\help.md" target="content\template\pages\help.md" />
-    <file src="..\src\core\bin\graze.contracts.dll" target="content\graze.contracts.dll" />
-    <file src="..\src\core\bin\graze.exe" target="content\graze.exe" />
-    <file src="..\src\core\bin\RazorEngine.dll" target="content\RazorEngine.dll" />
-    <file src="..\src\core\bin\System.Web.Razor.dll" target="content\System.Web.Razor.dll" />
-    <file src="..\src\core\bin\extras\graze.contracts.dll" target="content\extras\graze.contracts.dll" />
-    <file src="..\src\core\bin\extras\graze.extra.childpages.dll" target="content\extras\graze.extra.childpages.dll" />
-    <file src="..\src\core\bin\extras\graze.extra.html.dll" target="content\extras\graze.extra.html.dll" />
-    <file src="..\src\core\bin\extras\graze.extra.rss.dll" target="content\extras\graze.extra.rss.dll" />
-    <file src="..\src\core\bin\extras\graze.extra.markdown.dll" target="content\extras\graze.extra.markdown.dll" />
-    <file src="..\src\core\bin\extras\graze.extra.youtube.dll" target="content\extras\graze.extra.youtube.dll" />
+    <file src="..\src\graze\bin\template\assets\example\configuration.txt" target="content\template\assets\example\configuration.txt" />
+    <file src="..\src\graze\bin\template\assets\example\layout.txt" target="content\template\assets\example\layout.txt" />
+    <file src="..\src\graze\bin\template\assets\readme.txt" target="content\template\assets\readme.txt" />
+    <file src="..\src\graze\bin\template\configuration.xml" target="content\template\configuration.xml" />
+    <file src="..\src\graze\bin\template\index.cshtml" target="content\template\index.cshtml" />
+    <file src="..\src\graze\bin\template\pages\help.md" target="content\template\pages\help.md" />
+    <file src="..\src\graze\bin\release\graze.contracts.dll" target="lib\netcoreapp2.2\graze.contracts.dll" />
+    <file src="..\src\graze\bin\release\graze.dll" target="lib\netcoreapp2.2\graze.dll" />
+    <file src="..\src\graze\bin\release\graze.contracts.dll" target="lib\netcoreapp2.2\graze.contracts.dll" />
+    <file src="..\src\graze\bin\release\graze.extra.childpages.dll" target="lib\netcoreapp2.2\graze.extra.childpages.dll" />
+    <file src="..\src\graze\bin\release\graze.extra.html.dll" target="lib\netcoreapp2.2\graze.extra.html.dll" />
+    <file src="..\src\graze\bin\release\graze.extra.rss.dll" target="lib\netcoreapp2.2\graze.extra.rss.dll" />
+    <file src="..\src\graze\bin\release\graze.extra.markdown.dll" target="lib\netcoreapp2.2\graze.extra.markdown.dll" />
+    <file src="..\src\graze\bin\release\graze.extra.youtube.dll" target="lib\netcoreapp2.2\graze.extra.youtube.dll" />
     <file src="readme.txt" target="content\readme.txt" />
     <file src="install.ps1" target="tools\install.ps1" />
   </files>

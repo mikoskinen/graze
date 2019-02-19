@@ -2,6 +2,7 @@
 using System.IO;
 using System.Xml.Linq;
 using graze.contracts;
+using Markdig;
 
 namespace graze.extra.markdown
 {
@@ -19,23 +20,21 @@ namespace graze.extra.markdown
         {
             var xAttribute = element.Attribute("Location");
             if (xAttribute == null)
-                return string.Empty;
-
-            var fileLocation = Path.Combine(configuration.TemplateRootFolder, xAttribute.Value);
-
-            var options = new MarkdownOptions
             {
-                AutoHyperlink = true,
-                AutoNewlines = true,
-                EmptyElementSuffix = "/>",
-                EncodeProblemUrlCharacters = false,
-                LinkEmails = true,
-                StrictBoldItalic = true
-            };
+                return string.Empty;
+            }
 
-            var parser = new Markdown(options);
+            var fileLocation = Path.Combine(configuration.ConfigurationRootFolder, xAttribute.Value);
 
-            var result = parser.Transform(File.ReadAllText(fileLocation));
+            var pipeline = new MarkdownPipelineBuilder()
+                .UseBootstrap()
+                .UseEmojiAndSmiley()
+                .UseYamlFrontMatter()
+                .UseAdvancedExtensions()
+                .Build();
+
+            var mdContent = File.ReadAllText(fileLocation);
+            var result = Markdown.ToHtml(mdContent, pipeline);
 
             return result;
         }

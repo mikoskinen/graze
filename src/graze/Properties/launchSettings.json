@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "graze": {
+      "commandName": "Project",
+      "commandLineArgs": "-t \"C:\\dev\\projects\\graze-doc\\theme\" -c \"C:\\dev\\projects\\graze-doc\\configuration.xml\" -o \"C:\\dev\\projects\\graze-doc\\publish\" -a \"C:\\dev\\projects\\graze-doc\\theme\\assets\" -sf -e C:\\dev\\projects\\graze\\src\\graze\\bin\\publish"
+    }
+  }
+}

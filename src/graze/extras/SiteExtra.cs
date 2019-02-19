@@ -24,14 +24,16 @@ namespace graze.extras
             var modelProperties = (IDictionary<string, object>)result;
 
             foreach (var xElement in nodes)
+            {
                 AddPropertyToModel(xElement, modelProperties);
+            }
 
             return result;
         }
 
         private static void AddPropertyToModel(XElement element, IDictionary<string, object> propertyCollection)
         {
-            var hasDescendants = element.Descendants().Count() > 1;
+            var hasDescendants = element.Descendants().Count() >= 1;
 
             if (hasDescendants)
             {
@@ -40,7 +42,9 @@ namespace graze.extras
                 propertyCollection.Add(element.Name.LocalName, arrayOfValues);
             }
             else
+            {
                 propertyCollection.Add(element.Name.LocalName, GetPropertyValue(element));
+            }
         }
 
         private static List<object> CreateArray(XElement element)
@@ -52,7 +56,9 @@ namespace graze.extras
         {
             var isComplexValue = !element.Attributes().Any();
             if (isComplexValue)
+            {
                 return element.Value;
+            }
 
             var obj = new ExpandoObject();
             var objProperties = (IDictionary<string, object>)obj;

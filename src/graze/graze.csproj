@@ -6,9 +6,14 @@
 	<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>	
 	<PreserveCompilationContext>true</PreserveCompilationContext>	
 	<Copyright>Copyright © Mikael Koskinen 2019</Copyright>	
-	<Description>Static web site generator using Razor.</Description>	
+	<Description>Graze is a static web site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the Razor Syntax.</Description>	
 	<AssemblyVersion>8.0.0.0</AssemblyVersion>	
 	<FileVersion>8.0.0.0</FileVersion>	
+	<GeneratePackageOnBuild>true</GeneratePackageOnBuild>	
+	<Version>8.0.0-alpha</Version>	
+	<Authors>Mikael Koskinen</Authors>	
+	<PackageTags>generator website site graze template templating templatingengine</PackageTags>	
+	<PackageProjectUrl>https://github.com/mikoskinen/graze</PackageProjectUrl>	
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -29,10 +34,16 @@
     <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
     <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
     <PackageReference Include="System.ServiceModel.Syndication" Version="4.5.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\contracts\graze.contracts.csproj" />
+    <ProjectReference Include="..\extras\graze.extra.blog\graze.extra.childpages.csproj" />
+    <ProjectReference Include="..\extras\graze.extra.html\graze.extra.html.csproj" />
+    <ProjectReference Include="..\extras\graze.extra.markdown\graze.extra.markdown.csproj" />
+    <ProjectReference Include="..\extras\graze.extra.rss\graze.extra.rss.csproj" />
+    <ProjectReference Include="..\extras\graze.extra.youtube\graze.extra.youtube.csproj" />
   </ItemGroup>
 
   <ItemGroup>

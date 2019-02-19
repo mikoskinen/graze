@@ -9,9 +9,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Linq;
-//using RazorEngine.Configuration;
-//using RazorEngine.Templating;
-//using RazorEngine.Text;
 using graze.contracts;
 using RazorLight;
 
@@ -24,16 +21,33 @@ namespace graze
         private readonly Parameters parameters;
 
         [ImportMany(typeof(IExtra))]
-        public IEnumerable<IExtra> Extras { get; set; }
+        public IEnumerable<IExtra> Extras
+        {
+            get; set;
+        }
 
         public string TemplateRootFolder
         {
-            get { return parameters.TemplateRoot; }
+            get
+            {
+                return parameters.TemplateRoot;
+            }
         }
 
         public string OutputRootFolder
         {
-            get { return parameters.OutputRoot; }
+            get
+            {
+                return parameters.OutputRoot;
+            }
+        }
+
+        public string ConfigurationRootFolder
+        {
+            get
+            {
+                return Path.GetDirectoryName(parameters.TemplateConfigurationFile);
+            }
         }
 
         public Core()
@@ -47,21 +61,22 @@ namespace graze
 
         }
 
-        public string Run()
+        public void Run()
         {
             dynamic result = new ExpandoObject();
 
-            return Run(result);
+            Run(result);
         }
 
-        public string Run(ExpandoObject startingModel)
+        public void Run(ExpandoObject startingModel)
         {
-            var result = CreateSite(startingModel);
+            // Filter out duplciates
+            Extras = Extras.GroupBy(x => x.GetType().FullName).Select(x => x.First()).ToList();
 
-            return result;
+            CreateSite(startingModel);
         }
 
-        private string CreateSite(ExpandoObject startingModel)
+        private void CreateSite(ExpandoObject startingModel)
         {
             CreateOutputDirectory();
 
@@ -69,18 +84,19 @@ namespace graze
 
             var model = CreateModel(configuration, startingModel);
 
-            var template = File.ReadAllText(parameters.TemplateLayoutFile);
-            var result = GenerateOutput(model, template, parameters.TemplateRoot);
-
             if (parameters.HandleDirectories)
             {
                 common.DirCopy.Copy(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
             }
 
             if (parameters.CopyOutputFile)
-                File.WriteAllText(parameters.OutputHtmlPage, result);
+            {
 
-            return result;
+                var template = File.ReadAllText(parameters.TemplateLayoutFile);
+                var result = GenerateOutput(model, template, parameters.TemplateRoot);
+
+                File.WriteAllText(parameters.OutputHtmlPage, result);
+            }
         }
 
         private void CreateOutputDirectory()
@@ -111,19 +127,23 @@ namespace graze
             var dataElement = configuration.Element("data");
 
             if (dataElement == null)
+            {
                 return result;
+            }
 
             var elements = from node in dataElement.Elements()
                            select node;
 
             var delayedExecution = new ConcurrentBag<Tuple<IExtra, XElement>>();
-            
+
             Parallel.ForEach(elements, new ParallelOptions { MaxDegreeOfParallelism = parameters.MaxDegreeOfParallelism }, element =>
                                            {
                                                foreach (var extra in Extras)
                                                {
                                                    if (!CanProcess(extra, element))
+                                                   {
                                                        continue;
+                                                   }
 
                                                    if (RequiresDelayedExecution(extra))
                                                    {
@@ -137,7 +157,7 @@ namespace graze
 
             foreach (var tuple in delayedExecution)
             {
-                ProcessExtra(result, tuple.Item2, tuple.Item1 );
+                ProcessExtra(result, tuple.Item2, tuple.Item1);
             }
 
             return result;
@@ -145,7 +165,7 @@ namespace graze
 
         private bool RequiresDelayedExecution(IExtra extra)
         {
-            return extra.GetType().GetCustomAttributes(typeof (DelayedExecutionAttribute), true).Any();
+            return extra.GetType().GetCustomAttributes(typeof(DelayedExecutionAttribute), true).Any();
         }
 
         private static void ProcessExtra(dynamic result, XElement element, IExtra extra)
@@ -158,12 +178,22 @@ namespace graze
             {
                 foreach (var keyValuePair in resultDictionary)
                 {
-                    ((IDictionary<string, object>) result).Add(keyValuePair.Key, keyValuePair.Value);
+                    ((IDictionary<string, object>)result).Add(keyValuePair.Key, keyValuePair.Value);
                 }
             }
             else
             {
-                var name = element.Value.ToString(CultureInfo.InvariantCulture);
+                var name = "";
+
+                if (element.HasElements)
+                {
+                    name = element.LastNode.ToString().Trim();
+                }
+                else
+                {
+                    name = element.Value.ToString(CultureInfo.InvariantCulture);
+                }
+
                 ((IDictionary<string, object>)result).Add(name, modelExtra);
             }
         }
@@ -194,58 +224,110 @@ namespace graze
 
         public class Parameters
         {
-            public string TemplateRoot { get; private set; }
-            public string OutputRoot { get; private set; }
+            public string TemplateRoot
+            {
+                get; private set;
+            }
+            public string OutputRoot
+            {
+                get; private set;
+            }
             private bool handleDirectories = true;
             public bool HandleDirectories
             {
-                get { return handleDirectories; }
-                private set { handleDirectories = value; }
+                get
+                {
+                    return handleDirectories;
+                }
+                private set
+                {
+                    handleDirectories = value;
+                }
             }
 
             private bool copyOutputFile = true;
             public bool CopyOutputFile
             {
-                get { return copyOutputFile; }
-                private set { copyOutputFile = value; }
+                get
+                {
+                    return copyOutputFile;
+                }
+                private set
+                {
+                    copyOutputFile = value;
+                }
             }
 
-            public string TemplateConfigurationFile { get; private set; }
-            public string TemplateLayoutFile { get; private set; }
-            public string TemplateAssetsFolder { get; private set; }
-            public string OutputHtmlPage { get; private set; }
-            public string OutputAssetsFolder { get; private set; }
-            public int MaxDegreeOfParallelism { get; private set; }
+            public string TemplateConfigurationFile
+            {
+                get; private set;
+            }
+            public string TemplateLayoutFile
+            {
+                get; private set;
+            }
+            public string TemplateAssetsFolder
+            {
+                get; private set;
+            }
+            public string OutputHtmlPage
+            {
+                get; private set;
+            }
+            public string OutputAssetsFolder
+            {
+                get; private set;
+            }
+            public int MaxDegreeOfParallelism
+            {
+                get; private set;
+            }
+            public string ExtrasFolder
+            {
+                get; private set;
+            }
 
             public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string layoutFile, string outputPage, bool copyOutputFile)
-                : this(templateRoot ?? defaultTemplateRoot,
+                : this(
+                    templateRoot ?? defaultTemplateRoot,
                     outputRoot ?? defaultOutputRoot,
                     handleDirectories,
-                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultConfigurationFile),
                     layoutFile ?? Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile),
-                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
                     outputPage ?? Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage),
+                    copyOutputFile,
+                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultConfigurationFile),
+                    Path.Combine(templateRoot ?? defaultTemplateRoot, defaultAssetsFolder),
                     Path.Combine(outputRoot ?? defaultOutputRoot, defaultAssetsFolder),
-                   copyOutputFile, 4) { }
-
-            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateConfigurationFile, string templateLayoutFile, string templateAssetsFolder, string outputHtmlPage, string outputAssetsFolder,
-                bool copyOutputFile, int maxDegreeOfParallelism)
+                    4,
+                    @".\extras\"
+                    )
             {
-                TemplateRoot = templateRoot;
-                OutputRoot = outputRoot;
+            }
+
+            public Parameters(string templateRoot, string outputRoot, bool handleDirectories, string templateLayoutFile, string outputHtmlPage,
+                bool copyOutputFile, string templateConfigurationFile, string templateAssetsFolder, string outputAssetsFolder, int maxDegreeOfParallelism, string extrasFolder)
+            {
+                TemplateRoot = templateRoot ?? defaultTemplateRoot;
+                OutputRoot = outputRoot ?? defaultOutputRoot;
                 HandleDirectories = handleDirectories;
-                TemplateConfigurationFile = templateConfigurationFile;
-                TemplateLayoutFile = templateLayoutFile;
-                TemplateAssetsFolder = templateAssetsFolder;
-                OutputHtmlPage = outputHtmlPage;
-                OutputAssetsFolder = outputAssetsFolder;
+                TemplateLayoutFile = templateLayoutFile ?? Path.Combine(templateRoot ?? defaultTemplateRoot, defaultLayoutFile);
+                OutputHtmlPage = outputHtmlPage ?? Path.Combine(outputRoot ?? defaultOutputRoot, defaultOutputPage);
                 CopyOutputFile = copyOutputFile;
+
+                TemplateConfigurationFile = templateConfigurationFile ?? Path.Combine(TemplateRoot, defaultConfigurationFile);
+                TemplateAssetsFolder = templateAssetsFolder ?? Path.Combine(TemplateRoot, defaultAssetsFolder);
+                OutputAssetsFolder = outputAssetsFolder ?? Path.Combine(OutputRoot, defaultAssetsFolder);
+
                 MaxDegreeOfParallelism = maxDegreeOfParallelism;
+                ExtrasFolder = extrasFolder ?? @".\extras\";
             }
 
             public static Parameters Default
             {
-                get { return new Parameters(defaultTemplateRoot, defaultOutputRoot, true, null, null, true); }
+                get
+                {
+                    return new Parameters(defaultTemplateRoot, defaultOutputRoot, true, null, null, true);
+                }
             }
 
             private const string defaultTemplateRoot = "template";

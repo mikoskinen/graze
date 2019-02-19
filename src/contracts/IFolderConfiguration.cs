@@ -1,8 +1,9 @@
-namespace graze.contracts
+﻿namespace graze.contracts
 {
     public interface IFolderConfiguration
     {
         string TemplateRootFolder { get; }
         string OutputRootFolder { get; }
+        string ConfigurationRootFolder { get; }
     }
 }

@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 namespace graze.extra.childpages
@@ -22,7 +22,7 @@ namespace graze.extra.childpages
             return !tags.ContainsKey(tag) ? "" : tags[tag];
         }
 
-        public static Dictionary<string, string> GetTags(this string content)
+        public static Dictionary<string, string> GetMetaData(this string content)
         {
             var metaLines = content.Split(new string[] { "\r\n", "\n" }, StringSplitOptions.RemoveEmptyEntries);
 
@@ -31,7 +31,10 @@ namespace graze.extra.childpages
             foreach (var metaLine in metaLines)
             {
                 var key = metaLine.Substring(0, metaLine.IndexOf(":", StringComparison.Ordinal)).Trim();
-                if (metaLine.Length <= metaLine.IndexOf(":", StringComparison.Ordinal) + 1) continue;
+                if (metaLine.Length <= metaLine.IndexOf(":", StringComparison.Ordinal) + 1)
+                {
+                    continue;
+                }
 
                 var value = metaLine.Substring(metaLine.IndexOf(":") + 1).Trim();
 

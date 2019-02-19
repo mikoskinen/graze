@@ -8,9 +8,13 @@ using System.ServiceModel.Syndication;
 using System.Text.RegularExpressions;
 using System.Xml;
 using System.Xml.Linq;
+using AngleSharp.Html.Parser;
 using graze.common;
 using graze.contracts;
-using MarkdownSharp;
+using Markdig;
+using Markdig.Helpers;
+using Markdig.Parsers;
+using Markdig.Syntax;
 
 namespace graze.extra.childpages
 {
@@ -28,46 +32,63 @@ namespace graze.extra.childpages
 
         public string KnownElement
         {
-            get { return "ChildPages"; }
+            get
+            {
+                return "ChildPages";
+            }
         }
 
         private string defaultLayoutFile;
         private bool shouldGenerateRss;
+        private bool shouldGenerateFolderForEachPost;
+        private string readmeName;
 
         public object GetExtra(XElement element, dynamic currentModel)
         {
             relativePathPrefix = GetRelativePathPrefix(element);
             defaultLayoutFile = GetDefaultLayoutFile(element);
             shouldGenerateRss = GetShouldGenerateRss(element);
+            shouldGenerateFolderForEachPost = GetShouldGenerateFolderForEachPost(element);
+            readmeName = GetReadmeName(element);
             var childPagesFolder = GetChildPagesFolder(element);
 
-            var childPagesOutputFolder = element.Value.ToLowerInvariant();
+            var childPagesOutputFolder = element.LastNode != null && element.LastNode.NodeType == XmlNodeType.Text ? element.LastNode.ToString().Trim().ToLowerInvariant() : "";
             var outputFolder = Path.Combine(configuration.OutputRootFolder, childPagesOutputFolder);
+            var groupDefinitions = ParseGroupDefinitions(element);
 
             Directory.CreateDirectory(outputFolder);
 
-            var files = Directory.GetFiles(childPagesFolder, "*.md");
+            var files = Directory.GetFiles(childPagesFolder, "*.md", SearchOption.AllDirectories);
 
-            var posts = files.Select(file => CreatePage(file, childPagesOutputFolder)).ToList();
+            var posts = files.Select(file => CreatePage(file, childPagesOutputFolder, childPagesFolder)).ToList();
 
-            CreateChildPageIndex(posts, currentModel, outputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("IndexLayoutFile").Value));
+            var pageGroups = CreateGroups(posts, groupDefinitions);
+            currentModel.PageGroups = pageGroups;
+
+            var indexPageFileName = GetIndexPageFileName(element);
+            if (!string.IsNullOrWhiteSpace(indexPageFileName))
+            {
+                CreateChildPageIndex(posts, currentModel, outputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("IndexLayoutFile").Value), indexPageFileName);
+            }
 
             CreateTagPages(currentModel, outputFolder, childPagesOutputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagLayoutFile").Value), Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagsIndexLayoutFile").Value));
 
-            GeneratePages(posts.OrderBy(x => x.Time).ToList(), currentModel, outputFolder);
+            GeneratePages(posts.OrderBy(x => x.Time).ToList(), currentModel, configuration.OutputRootFolder);
 
             CopyContent(childPagesFolder, outputFolder);
+            CopyPostContent(posts, childPagesFolder, outputFolder);
 
             var result = new ChildPages
             {
                 Name = childPagesOutputFolder,
                 Pages = posts.OrderBy(x => x.Time).ToList(),
                 Tags = allTags.Select(x => x.Value).ToList(),
-
             };
 
             if (shouldGenerateRss)
+            {
                 GenerateRss(element, result, outputFolder);
+            }
 
             return result;
         }
@@ -80,7 +101,9 @@ namespace graze.extra.childpages
         private string GetDefaultLayoutFile(XElement element)
         {
             if (element.Attribute("DefaultPageLayoutFile") == null)
+            {
                 return null;
+            }
 
             return element.Attribute("DefaultPageLayoutFile").Value;
         }
@@ -88,14 +111,46 @@ namespace graze.extra.childpages
         private bool GetShouldGenerateRss(XElement element)
         {
             if (element.Attribute("DefaultPageLayoutFile") == null)
+            {
                 return false;
+            }
 
             return element.Attribute("RssGenerate").Value == "true";
         }
 
+        private bool GetShouldGenerateFolderForEachPost(XElement element)
+        {
+            if (element.Attribute("FolderPerPage") == null)
+            {
+                return true;
+            }
+
+            return element.Attribute("FolderPerPage").Value == "true";
+        }
+
+        private string GetIndexPageFileName(XElement element)
+        {
+            if (element.Attribute("IndexFileName") == null)
+            {
+                return null;
+            }
+
+            return element.Attribute("IndexFileName").Value;
+        }
+
+        private string GetReadmeName(XElement element)
+        {
+            if (element.Attribute("ReadmeName") == null)
+            {
+                return null;
+            }
+
+            return element.Attribute("ReadmeName").Value;
+        }
+
         private string GetChildPagesFolder(XElement element)
         {
-            return Path.Combine(configuration.TemplateRootFolder, element.Attribute("Location") == null ? "pages" : element.Attribute("Location").Value);
+            return Path.Combine(configuration.ConfigurationRootFolder, element.Attribute("Location") == null ? "pages" : element.Attribute("Location").Value);
         }
 
         private void CreateTagPages(dynamic currentModel, string outputFolder, string childPagesOutputFolder, string tagLayoutFile, string tagsIndexLayoutFile)
@@ -114,7 +169,9 @@ namespace graze.extra.childpages
                 var layout = File.ReadAllText(tagLayoutFile);
 
                 if (modelDictionary.ContainsKey("Tag"))
+                {
                     modelDictionary.Remove("Tag");
+                }
 
                 modelDictionary.Add("Tag", tag);
 
@@ -128,42 +185,49 @@ namespace graze.extra.childpages
             var tagIndexLayout = File.ReadAllText(tagsIndexLayoutFile);
 
             if (modelDictionary.ContainsKey("Tags"))
+            {
                 modelDictionary.Remove("Tags");
+            }
 
             modelDictionary.Add("Tags", allTags.Select(t =>
-                                                           {
-                                                               var tag = t.Value;
-                                                               tag.Location = Path.Combine(@"\", relativePathPrefix, childPagesOutputFolder, "tags", tag.Name).Replace(@"\", @"/");
+            {
+                var tag = t.Value;
+                tag.Location = Path.Combine(@"\", relativePathPrefix, childPagesOutputFolder, "tags", tag.Name).Replace(@"\", @"/");
 
-                                                               return tag;
-                                                           }).ToList());
+                return tag;
+            }).ToList());
 
             var tagsIndexPageContent = generator.GenerateOutput(currentModel, tagIndexLayout);
 
             File.WriteAllText(Path.Combine(tagsRoot, "index.html"), tagsIndexPageContent);
 
             modelDictionary.Remove("Tags");
-
         }
 
-        private void CreateChildPageIndex(List<Page> pages, dynamic currentModel, string outputFolder, string layoutFile)
+        private void CreateChildPageIndex(List<Page> pages, dynamic currentModel, string outputFolder, string layoutFile, string indexPageFileName)
         {
             var modelDictionary = (IDictionary<string, object>)currentModel;
 
             if (modelDictionary.ContainsKey("Pages"))
+            {
                 modelDictionary.Remove("Pages");
+            }
 
             if (modelDictionary.ContainsKey("PagesDesc"))
+            {
                 modelDictionary.Remove("PagesDesc");
+            }
 
             if (modelDictionary.ContainsKey("PagesAsc"))
+            {
                 modelDictionary.Remove("PagesAsc");
+            }
 
             modelDictionary.Add("Pages", pages);
             modelDictionary.Add("PagesDesc", pages.OrderByDescending(x => x.Time).ToList());
             modelDictionary.Add("PagesAsc", pages.OrderBy(x => x.Time).ToList());
 
-            var indexFileLocation = Path.Combine(outputFolder, "index.html");
+            var indexFileLocation = Path.Combine(outputFolder, indexPageFileName);
 
             var layoutContent = File.ReadAllText(layoutFile);
 
@@ -176,57 +240,85 @@ namespace graze.extra.childpages
             modelDictionary.Remove("PagesAsc");
         }
 
-        private Page CreatePage(string file, string childPagesRootFolder)
+        private Page CreatePage(string file, string childPagesOutputRoot, string childPagesFolder)
         {
             var fileContent = File.ReadAllText(file);
+            var meta = new Dictionary<string, string>();
+            var content = fileContent;
+
             var postContent = Regex.Split(fileContent, "---");
-            var metadata = postContent[1];
-            var content = postContent[2];
+            var containsMetaData = postContent.Count() > 1;
 
-            var meta = metadata.GetTags();
+            if (containsMetaData)
+            {
+                var metadata = postContent[1];
+                meta = metadata.GetMetaData();
 
-            var title = meta["title"];
-            var permalink = meta["permalink"];
-            var description = meta["description"];
-            var tags = meta["tags"].Split(',').Select(tag => tag.Trim()).ToList();
+                content = postContent[2];
+            }
+
+            var title = meta.ContainsKey("title") ? meta["title"] : Path.GetFileNameWithoutExtension(file);
+            var slurg = meta.ContainsKey("permalink") ? meta["permalink"] : Path.GetFileNameWithoutExtension(file);
+
+            var description = meta.ContainsKey("description") ? meta["description"] : Path.GetFileNameWithoutExtension(file);
+            var tags = meta.ContainsKey("tags") ? meta["tags"].Split(',').Select(tag => tag.Trim()).ToList() : new List<string>();
 
             var layout = meta.ContainsKey("layout") ? meta["layout"] : defaultLayoutFile;
 
             if (string.IsNullOrWhiteSpace(layout))
+            {
                 throw new ArgumentNullException("Layout", "No layout set either in the post or in the configuration.");
+            }
 
             var layoutFile = Path.Combine(configuration.TemplateRootFolder, layout);
             DateTime time;
-            if (!DateTime.TryParse(meta["time"], CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+
+            if (meta.ContainsKey("time"))
             {
-                var parsingTimeFailedPage = string.Format("Parsing time failed. Page {0}, Date {1}", file, meta["time"]);
-                throw new Exception(parsingTimeFailedPage);
+                if (!DateTime.TryParse(meta["time"], CultureInfo.InvariantCulture, DateTimeStyles.None, out time))
+                {
+                    var parsingTimeFailedPage = string.Format("Parsing time failed. Page {0}, Date {1}", file, meta["time"]);
+                    throw new Exception(parsingTimeFailedPage);
+                }
             }
+            else
+            {
+                time = File.GetLastWriteTime(file);
+            }
+
+            var location = GetFileLocation(file, childPagesFolder, childPagesOutputRoot);
+
+            var order = meta.ContainsKey("order") ? int.Parse(meta["order"]) : int.MaxValue;
 
             var post = new Page
             {
                 Description = description,
-                Location = Path.Combine(@"\", relativePathPrefix, childPagesRootFolder, permalink).Replace(@"\", @"/"),
+                Location = location,
                 Title = title,
                 Time = time,
                 TagNames = tags,
-                Slurg = permalink,
+                Slurg = slurg,
                 LayoutFile = layoutFile,
-                ParentPage = Path.Combine("/", relativePathPrefix, childPagesRootFolder)
+                ParentPage = Path.Combine("/", relativePathPrefix, childPagesOutputRoot),
+                Group = GetGroup(file, childPagesFolder, childPagesOutputRoot),
+                Order = order,
+                OriginalLocation = file,
+                IncludeInNavigation = meta.ContainsKey("in-navigation") ? bool.Parse(meta["in-navigation"]) : true,
+                ContainsToc = meta.ContainsKey("toc") ? bool.Parse(meta["toc"]) : true,
             };
 
-            var options = new MarkdownOptions
-            {
-                AutoHyperlink = true,
-                AutoNewlines = true,
-                EmptyElementSuffix = "/>",
-                LinkEmails = true,
-                StrictBoldItalic = true
-            };
+            var builder = new MarkdownPipelineBuilder()
+                .UseAutoIdentifiers()
+                .UseBootstrap()
+                .UseEmojiAndSmiley()
+                .UseYamlFrontMatter()
+                .UseAdvancedExtensions();
 
-            var parser = new Markdown(options);
+            var pipeline = builder.Build();
 
-            post.Content = parser.Transform(content.Trim());
+            var cont = Markdown.Parse(content.Trim(), pipeline);
+
+            post.Content = Markdown.ToHtml(content.Trim(), pipeline);
 
             foreach (var tag in post.TagNames)
             {
@@ -240,7 +332,82 @@ namespace graze.extra.childpages
                 allTags.Add(tag, value);
             }
 
+            var parser = new HtmlParser();
+            var document = parser.ParseDocument(post.Content);
+
+            var elementsWithIds = document.All.Where(x => x.HasAttribute("id")).ToList();
+            var toc = new List<Tuple<int, string, string>>();
+
+            var currentLevel = 1;
+            foreach (var element in elementsWithIds)
+            {
+                if (element is AngleSharp.Html.Dom.IHtmlHeadingElement header)
+                {
+                    currentLevel = int.Parse(new string(header.LocalName.Where(Char.IsDigit).ToArray()));
+                }
+                else
+                {
+                    currentLevel += 1;
+                }
+
+                var tocItem = Tuple.Create(currentLevel, element.Id, element.TextContent);
+                toc.Add(tocItem);
+            }
+
+            post.TableOfContents = toc;
+
+            var images = document.Images.ToList();
+            for (var i = 0; i < images.Count; i++)
+            {
+                var image = images[i];
+
+                var wrapperLink = document.CreateElement("a");
+                wrapperLink.SetAttribute("href", image.GetAttribute("src"));
+                wrapperLink.ClassName = "lightbox";
+
+                var imageParent = image.ParentElement;
+                imageParent.ReplaceChild(wrapperLink, image);
+                wrapperLink.AppendChild(image);
+            }
+
+            post.Content = document.Body.InnerHtml;
+
             return post;
+        }
+
+        private string GetFileLocation(string file, string childPagesFolder, string childPagesOutputRoot)
+        {
+            var routeRootUri = new Uri(childPagesFolder.EndsWith("\\") ? childPagesFolder : childPagesFolder + "\\");
+            var routeUri = routeRootUri.MakeRelativeUri(new Uri(Path.ChangeExtension(file, null), UriKind.Absolute));
+
+            var outputFileName = routeUri.ToString();
+            if (!shouldGenerateFolderForEachPost && outputFileName.EndsWith("readme", StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrWhiteSpace(readmeName))
+            {
+                outputFileName = outputFileName.Replace("readme", readmeName);
+            }
+
+            var location = Path.Combine(@"\", relativePathPrefix, childPagesOutputRoot, outputFileName).Replace(@"\", @"/");
+
+            if (shouldGenerateFolderForEachPost)
+            {
+                location = Path.Combine(location, "index.html");
+            }
+            else
+            {
+                location = location + ".html";
+            }
+
+            return location;
+        }
+
+        private string GetGroup(string file, string childPagesFolder, string childPagesOutputRoot)
+        {
+            var routeRootUri = new Uri(childPagesFolder.EndsWith("\\") ? childPagesFolder : childPagesFolder + "\\");
+            var routeUri = routeRootUri.MakeRelativeUri(new Uri(Path.ChangeExtension(file, null), UriKind.Absolute)).ToString();
+
+            var result = Path.GetDirectoryName(routeUri.ToString());
+
+            return result;
         }
 
         private void GeneratePages(List<Page> pages, dynamic currentModel, string outputFolder)
@@ -270,19 +437,22 @@ namespace graze.extra.childpages
         {
             var modelDictionary = (IDictionary<string, object>)currentModel;
             if (modelDictionary.ContainsKey("Page"))
+            {
                 modelDictionary.Remove("Page");
+            }
 
             modelDictionary.Add("Page", page);
 
-            var postFolder = Path.Combine(outputFolder, page.Slurg);
+            var postFolder = Path.Combine(outputFolder, Path.GetDirectoryName(page.Location.Trim('/')));
             Directory.CreateDirectory(postFolder);
 
             var layoutContent = File.ReadAllText(page.LayoutFile);
             var staticPage = generator.GenerateOutput(currentModel, layoutContent);
 
-            var postFileLocation = Path.Combine(outputFolder, page.Slurg, "index.html");
+            var postFileName = Path.Combine(outputFolder, page.Location.Trim('/'));
+            File.WriteAllText(postFileName, staticPage);
 
-            File.WriteAllText(postFileLocation, staticPage);
+            page.OutputLocation = postFileName;
 
             modelDictionary.Remove("Page");
         }
@@ -292,12 +462,44 @@ namespace graze.extra.childpages
             var contentSourceFolder = Path.Combine(childPagesFolder, "content");
 
             if (!Directory.Exists(contentSourceFolder))
+            {
                 return;
+            }
 
             var contentOutputFolder = Path.Combine(outputFolder, "content");
 
             DirCopy.Copy(contentSourceFolder, contentOutputFolder);
         }
+
+        private HashSet<(string, string)> _handledPostContentFolders = new HashSet<(string, string)>();
+
+        private void CopyPostContent(List<Page> posts, string childPagesFolder, string outputFolder)
+        {
+            foreach (var post in posts)
+            {
+                var postOriginalDirectory = Path.GetDirectoryName(post.OriginalLocation);
+                var postTargetDirectory = Path.GetDirectoryName(post.OutputLocation);
+
+                var key = (postOriginalDirectory, postTargetDirectory);
+                if (_handledPostContentFolders.Contains(key))
+                {
+                    continue;
+                }
+
+                var imageFiles = Directory.EnumerateFiles(postOriginalDirectory, "*.*", SearchOption.TopDirectoryOnly)
+                    .Where(s => s.EndsWith(".gif", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".jpg", StringComparison.InvariantCultureIgnoreCase) || s.EndsWith(".png", StringComparison.InvariantCultureIgnoreCase)).ToList();
+
+                foreach (var imageFile in imageFiles)
+                {
+                    var fileName = Path.GetFileName(imageFile);
+
+                    File.Copy(imageFile, Path.Combine(postTargetDirectory, fileName), true);
+                }
+
+                _handledPostContentFolders.Add(key);
+            }
+        }
+
 
         private void GenerateRss(XElement element, ChildPages result, string outputFolder)
         {
@@ -337,5 +539,100 @@ namespace graze.extra.childpages
 
             result.Rss = result.Name + "/" + "rss.xml";
         }
+
+        private List<PageGroup> ParseGroupDefinitions(XElement element)
+        {
+            var result = new List<PageGroup>();
+
+            var groupDefinitions = element.Descendants("Group").ToList();
+            for (var i = 0; i < groupDefinitions.Count; i++)
+            {
+                var groupDefinition = groupDefinitions[i];
+                var key = groupDefinition.Attribute("Key").Value;
+                var name = groupDefinition.Value;
+                var order = i;
+
+                var item = new PageGroup();
+                item.Key = key;
+                item.Name = name;
+                item.Order = order;
+
+                if (groupDefinition.Attribute("ShowChildPagesIfEmptyOrOne") != null)
+                {
+                    item.ShowChildPagesIfEmptyOrOne = bool.Parse(groupDefinition.Attribute("ShowChildPagesIfEmptyOrOne").Value);
+                }
+
+                if (groupDefinition.Attribute("ShowTocIfOnePage") != null)
+                {
+                    item.ShowTocIfOnePage = bool.Parse(groupDefinition.Attribute("ShowTocIfOnePage").Value);
+                }
+                else
+                {
+                    item.ShowTocIfOnePage = true;
+                }
+
+                if (groupDefinition.Attribute("ReplaceGroupNameWithPageNameIfOnePage") != null)
+                {
+                    item.ReplaceGroupNameWithPageNameIfOnePage = bool.Parse(groupDefinition.Attribute("ReplaceGroupNameWithPageNameIfOnePage").Value);
+                }
+                else
+                {
+                    item.ReplaceGroupNameWithPageNameIfOnePage = true;
+                }
+
+                result.Add(item);
+            }
+
+            return result;
+        }
+
+        private List<PageGroup> CreateGroups(List<Page> pages, List<PageGroup> pageGroups)
+        {
+            var result = new List<PageGroup>(pageGroups);
+
+            var groupedPosts = pages.GroupBy(x => x.Group).ToList();
+            foreach (var postGroup in groupedPosts)
+            {
+                var existingGroup = result.FirstOrDefault(x => x.Key == postGroup.Key);
+                if (existingGroup != null)
+                {
+                    existingGroup.Pages = new List<Page>();
+                }
+                else
+                {
+                    result.Add(new PageGroup() { Key = postGroup.Key, Order = int.MaxValue, Name = postGroup.Key, Pages = new List<Page>() });
+                }
+            }
+
+            foreach (var post in pages.Where(x => x.IncludeInNavigation))
+            {
+                var postGroup = result.FirstOrDefault(x => x.Key == post.Group);
+
+                if (postGroup != null)
+                {
+                    postGroup.Pages.Add(post);
+                }
+            }
+
+            foreach (var postGroup in result)
+            {
+                if (postGroup.Pages?.Any() == true)
+                {
+                    postGroup.Pages = postGroup.Pages.OrderBy(x => x.Order).ThenBy(x => x.Title).ThenBy(x => x.Time).ToList();
+                    postGroup.DefaultLocation = postGroup.Pages.First().Location;
+                }
+            }
+
+            foreach (var page in pages)
+            {
+                var groupPages = result.FirstOrDefault(x => x.Key == page.Group)?.Pages ?? new List<Page>();
+                page.PagesInGroup = groupPages.OrderBy(x => x.Order).ThenBy(x => x.Title).ThenBy(x => x.Time).ToList();
+            }
+
+            result = result.OrderBy(x => x.Order).ThenBy(x => x.Name).ToList();
+
+            return result;
+        }
+
     }
 }

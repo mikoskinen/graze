@@ -16,7 +16,7 @@ namespace graze
                 var parameters = GetParameters(args);
                 var core = new Core(parameters);
 
-                var extrasFolderCatalog = new DirectoryCatalog(@".\extras\");
+                var extrasFolderCatalog = new DirectoryCatalog(parameters.ExtrasFolder);
                 var currentAssemblyCatalog = new AssemblyCatalog(typeof(Program).Assembly);
                 var aggregateCatalog = new AggregateCatalog(extrasFolderCatalog, currentAssemblyCatalog);
 
@@ -26,16 +26,15 @@ namespace graze
                 core.Run();
 
                 Console.WriteLine("Static site created successfully");
-
-                if (Debugger.IsAttached)
-                    Console.ReadLine();
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.ToString());
 
                 if (Debugger.IsAttached)
+                {
                     Console.ReadLine();
+                }
 
                 Environment.ExitCode = 1;
             }
@@ -47,6 +46,9 @@ namespace graze
             string outputRoot = null;
             string templateFile = null;
             string outputFile = null;
+            string extrasRoot = null;
+            string configurationFile = null;
+            string templateAssetsFolder = null;
 
             var shopHelp = false;
             var copyAssets = true;
@@ -60,7 +62,10 @@ namespace graze
                                       {"of|outputfile=", "The output file which is generated.", v => outputFile = v},
                                       { "h|help",  "Show this message and exit", v => shopHelp = true},
                                       { "s|skip",  "Skip directory creation and asset-folder copy", v => copyAssets = false},
-                                      { "sf|skipfile",  "Skip output file copy", v => copyFile = true},
+                                      { "sf|skipfile",  "Skip output file copy", v => copyFile = false},
+                                      { "e|extras=", "The extras folder", v => extrasRoot = v },
+                                      { "c|configuration=", "Configuration file with path", v => configurationFile = v },
+                                      { "a|assets=", "Template's assets folder", v => templateAssetsFolder = v },
                                   };
 
             options.Parse(args);
@@ -69,12 +74,16 @@ namespace graze
             {
                 options.WriteOptionDescriptions(Console.Out);
                 if (Debugger.IsAttached)
+                {
                     Console.ReadLine();
+                }
 
                 Environment.Exit(0);
             }
 
-            return new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile, copyFile);
+            var result = new Core.Parameters(templateRoot, outputRoot, copyAssets, templateFile, outputFile, copyFile, configurationFile, templateAssetsFolder, null, 4, extrasRoot);
+
+            return result;
         }
     }
 }

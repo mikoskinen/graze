@@ -1,2 +1,2 @@
-C:\Windows\Microsoft.NET\Framework\v4.0.30319\msbuild.exe ..\src\graze.sln /p:Configuration=Release
-nuget pack graze.nuspec -Version 8.0.0
+dotnet build ..\src\graze.sln -c Release
+nuget pack graze.nuspec -Version 8.0.0-alpha
