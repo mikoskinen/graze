@@ -16,13 +16,6 @@ namespace graze
                 var parameters = GetParameters(args);
                 var core = new Core(parameters);
 
-                var extrasFolderCatalog = new DirectoryCatalog(parameters.ExtrasFolder);
-                var currentAssemblyCatalog = new AssemblyCatalog(typeof(Program).Assembly);
-                var aggregateCatalog = new AggregateCatalog(extrasFolderCatalog, currentAssemblyCatalog);
-
-                var container = new CompositionContainer(aggregateCatalog);
-                container.ComposeParts(core);
-
                 core.Run();
 
                 Console.WriteLine("Static site created successfully");

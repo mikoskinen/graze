@@ -260,7 +260,7 @@ namespace graze.extra.childpages
             var title = meta.ContainsKey("title") ? meta["title"] : Path.GetFileNameWithoutExtension(file);
             var slurg = meta.ContainsKey("permalink") ? meta["permalink"] : Path.GetFileNameWithoutExtension(file);
 
-            var description = meta.ContainsKey("description") ? meta["description"] : Path.GetFileNameWithoutExtension(file);
+            var description = meta.ContainsKey("description") ? meta["description"] : "";
             var tags = meta.ContainsKey("tags") ? meta["tags"].Split(',').Select(tag => tag.Trim()).ToList() : new List<string>();
 
             var layout = meta.ContainsKey("layout") ? meta["layout"] : defaultLayoutFile;
@@ -629,10 +629,34 @@ namespace graze.extra.childpages
                 page.PagesInGroup = groupPages.OrderBy(x => x.Order).ThenBy(x => x.Title).ThenBy(x => x.Time).ToList();
             }
 
+            foreach (var pageGroup in result)
+            {
+                if (pageGroup.Pages.Count == 1)
+                {
+                    var page = pageGroup.Pages.First();
+                    var tableOfContents = page.TableOfContents;
+                    if (tableOfContents != null && tableOfContents.Any())
+                    {
+                        var pageList = new List<Page>();
+                        foreach (var tableOfContent in page.TableOfContents)
+                        {
+                            pageList.Add(new Page()
+                            {
+                                Location = page.Location + "#" + tableOfContent.Item2,
+                                Title = tableOfContent.Item3
+                            });
+                        }
+
+                        page.Title = pageGroup.Name;
+                        pageGroup.Pages.Clear();
+                        pageGroup.Pages.AddRange(pageList);
+                    }
+                }
+            }
+
             result = result.OrderBy(x => x.Order).ThenBy(x => x.Name).ToList();
 
             return result;
         }
-
     }
 }

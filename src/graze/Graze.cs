@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.ComponentModel.Composition;
+using System.ComponentModel.Composition.Hosting;
 using System.Dynamic;
 using System.Globalization;
 using System.IO;
@@ -18,7 +19,9 @@ namespace graze
     [Export(typeof(IGenerator))]
     public class Core : IFolderConfiguration, IGenerator
     {
-        private readonly Parameters parameters;
+        private readonly Parameters _parameters;
+        private static string _engineLock = "lock";
+        private static RazorLightEngine _engine;
 
         [ImportMany(typeof(IExtra))]
         public IEnumerable<IExtra> Extras
@@ -30,7 +33,7 @@ namespace graze
         {
             get
             {
-                return parameters.TemplateRoot;
+                return _parameters.TemplateRoot;
             }
         }
 
@@ -38,7 +41,7 @@ namespace graze
         {
             get
             {
-                return parameters.OutputRoot;
+                return _parameters.OutputRoot;
             }
         }
 
@@ -46,7 +49,7 @@ namespace graze
         {
             get
             {
-                return Path.GetDirectoryName(parameters.TemplateConfigurationFile);
+                return Path.GetDirectoryName(_parameters.TemplateConfigurationFile);
             }
         }
 
@@ -57,7 +60,7 @@ namespace graze
 
         public Core(Parameters parameters)
         {
-            this.parameters = parameters;
+            _parameters = parameters;
 
         }
 
@@ -70,46 +73,63 @@ namespace graze
 
         public void Run(ExpandoObject startingModel)
         {
-            // Filter out duplciates
+            SetExtras();
+
+            // Filter out duplicates
             Extras = Extras.GroupBy(x => x.GetType().FullName).Select(x => x.First()).ToList();
 
             CreateSite(startingModel);
+        }
+
+        private void SetExtras()
+        {
+            if (Extras != null && Extras.Count() != 0)
+            {
+                return;
+            }
+
+            var extrasFolderCatalog = new DirectoryCatalog(_parameters.ExtrasFolder);
+            var currentAssemblyCatalog = new AssemblyCatalog(typeof(Program).Assembly);
+            var aggregateCatalog = new AggregateCatalog(extrasFolderCatalog, currentAssemblyCatalog);
+
+            var container = new CompositionContainer(aggregateCatalog);
+            container.ComposeParts(this);
         }
 
         private void CreateSite(ExpandoObject startingModel)
         {
             CreateOutputDirectory();
 
-            var configuration = XDocument.Load(parameters.TemplateConfigurationFile);
+            var configuration = XDocument.Load(_parameters.TemplateConfigurationFile);
 
             var model = CreateModel(configuration, startingModel);
 
-            if (parameters.HandleDirectories)
+            if (_parameters.HandleDirectories)
             {
-                common.DirCopy.Copy(parameters.TemplateAssetsFolder, parameters.OutputAssetsFolder);
+                common.DirCopy.Copy(_parameters.TemplateAssetsFolder, _parameters.OutputAssetsFolder);
             }
 
-            if (parameters.CopyOutputFile)
+            if (_parameters.CopyOutputFile)
             {
 
-                var template = File.ReadAllText(parameters.TemplateLayoutFile);
-                var result = GenerateOutput(model, template, parameters.TemplateRoot);
+                var template = File.ReadAllText(_parameters.TemplateLayoutFile);
+                var result = GenerateOutput(model, template, _parameters.TemplateRoot);
 
-                File.WriteAllText(parameters.OutputHtmlPage, result);
+                File.WriteAllText(_parameters.OutputHtmlPage, result);
             }
         }
 
         private void CreateOutputDirectory()
         {
-            if (parameters.HandleDirectories)
+            if (_parameters.HandleDirectories)
             {
-                if (Directory.Exists(parameters.OutputRoot))
+                if (Directory.Exists(_parameters.OutputRoot))
                 {
-                    Directory.Delete(parameters.OutputRoot, true);
+                    Directory.Delete(_parameters.OutputRoot, true);
                     Thread.Sleep(150);
                 }
 
-                Directory.CreateDirectory(parameters.OutputRoot);
+                Directory.CreateDirectory(_parameters.OutputRoot);
                 Thread.Sleep(150);
             }
         }
@@ -136,7 +156,7 @@ namespace graze
 
             var delayedExecution = new ConcurrentBag<Tuple<IExtra, XElement>>();
 
-            Parallel.ForEach(elements, new ParallelOptions { MaxDegreeOfParallelism = parameters.MaxDegreeOfParallelism }, element =>
+            Parallel.ForEach(elements, new ParallelOptions { MaxDegreeOfParallelism = _parameters.MaxDegreeOfParallelism }, element =>
                                            {
                                                foreach (var extra in Extras)
                                                {
@@ -213,13 +233,34 @@ namespace graze
             var currentLocation = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);
             var templateRootPath = Path.Combine(currentLocation, templateRoot);
 
-            var engine = new RazorLightEngineBuilder()
-                .UseFilesystemProject(templateRootPath)
-                .Build();
+            var engine = GetRazorEngine(templateRootPath);
 
-            var result = engine.CompileRenderAsync("notNeeded", template, model, model).Result;
+            var result = engine.CompileRenderAsync(template.GetHashCode().ToString(), template, model, model).Result;
 
             return result;
+        }
+
+        private static RazorLightEngine GetRazorEngine(string templateRootPath)
+        {
+            if (_engine != null)
+            {
+                return _engine;
+            }
+
+            lock (_engineLock)
+            {
+                if (_engine != null)
+                {
+                    return _engine;
+                }
+
+                _engine = new RazorLightEngineBuilder()
+                    .UseMemoryCachingProvider()
+                    .UseFilesystemProject(templateRootPath)
+                    .Build();
+
+                return _engine;
+            }
         }
 
         public class Parameters
@@ -340,7 +381,7 @@ namespace graze
 
         string IGenerator.GenerateOutput(ExpandoObject model, string template)
         {
-            return GenerateOutput(model, template, parameters.TemplateRoot);
+            return GenerateOutput(model, template, _parameters.TemplateRoot);
         }
     }
 }
