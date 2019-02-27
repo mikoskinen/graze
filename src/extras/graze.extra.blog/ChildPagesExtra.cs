@@ -73,7 +73,7 @@ namespace graze.extra.childpages
 
             CreateTagPages(currentModel, outputFolder, childPagesOutputFolder, Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagLayoutFile").Value), Path.Combine(configuration.TemplateRootFolder, element.Attribute("TagsIndexLayoutFile").Value));
 
-            GeneratePages(posts.OrderBy(x => x.Time).ToList(), currentModel, configuration.OutputRootFolder);
+            GeneratePages(posts, currentModel, configuration.OutputRootFolder);
 
             CopyContent(childPagesFolder, outputFolder);
             CopyPostContent(posts, childPagesFolder, outputFolder);
@@ -635,6 +635,7 @@ namespace graze.extra.childpages
                 {
                     var page = pageGroup.Pages.First();
                     var tableOfContents = page.TableOfContents;
+
                     if (tableOfContents != null && tableOfContents.Any())
                     {
                         var pageList = new List<Page>();
@@ -648,8 +649,21 @@ namespace graze.extra.childpages
                         }
 
                         page.Title = pageGroup.Name;
+                        page.TableOfContents = new List<Tuple<int, string, string>>();
                         pageGroup.Pages.Clear();
                         pageGroup.Pages.AddRange(pageList);
+                    }
+                }
+                else
+                {
+                    Page previousPageInGroup = null;
+                    for (var i = 0; i < pageGroup.Pages.Count; i++)
+                    {
+                        var page = pageGroup.Pages[i];
+                        page.PreviousPageInGroup = previousPageInGroup;
+                        page.NextPageInGroup = pageGroup.Pages.Count > i + 1 ? pageGroup.Pages[i + 1] : null;
+
+                        previousPageInGroup = page;
                     }
                 }
             }

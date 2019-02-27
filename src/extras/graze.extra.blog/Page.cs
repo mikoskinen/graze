@@ -62,6 +62,16 @@ namespace graze.extra.childpages
             get; set;
         }
 
+        public Page NextPageInGroup
+        {
+            get;set;
+        }
+
+        public Page PreviousPageInGroup
+        {
+            get;set;
+        }
+
         public List<Tuple<int, string, string>> TableOfContents
         {
             get; set;
