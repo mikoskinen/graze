@@ -1,5 +1,5 @@
 MIT License
-Copyright (C) 2012 Mikael Koskinen
+Copyright (C) 2019 Mikael Koskinen
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
