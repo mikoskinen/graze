@@ -14,6 +14,8 @@
     <licenseUrl>https://github.com/mikoskinen/graze/blob/master/license/Graze.txt</licenseUrl>	
     <dependencies>
       <group targetFramework=".NETCoreApp2.2">
+        <dependency id="AngleSharp" version="[0.11.0]" exclude="[Build,Analyzers" />
+        <dependency id="MarkDig" version="[0.15.7]" exclude="[Build,Analyzers" />
         <dependency id="RazorLight" version="[2.0.0-beta1]" exclude="[Build,Analyzers" />
         <dependency id="System.ComponentModel.Composition" version="[4.5.0]" exclude="Build,Analyzers" />
         <dependency id="System.ServiceModel.Syndication" version="[4.5.0]" exclude="Build,Analyzers" />
