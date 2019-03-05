@@ -600,7 +600,7 @@ namespace graze.extra.childpages
                 }
                 else
                 {
-                    result.Add(new PageGroup() { Key = postGroup.Key, Order = int.MaxValue, Name = postGroup.Key, Pages = new List<Page>() });
+                    result.Add(new PageGroup() { Key = postGroup.Key, Order = int.MaxValue, Name = postGroup.Key, Pages = new List<Page>(), ReplaceGroupNameWithPageNameIfOnePage = true, ShowTocIfOnePage = true });
                 }
             }
 
@@ -648,10 +648,18 @@ namespace graze.extra.childpages
                             });
                         }
 
-                        page.Title = pageGroup.Name;
                         page.TableOfContents = new List<Tuple<int, string, string>>();
                         pageGroup.Pages.Clear();
                         pageGroup.Pages.AddRange(pageList);
+                    }
+
+                    if (pageGroup.ReplaceGroupNameWithPageNameIfOnePage && string.IsNullOrWhiteSpace(pageGroup.Name))
+                    {
+                        pageGroup.Name = page.Title;
+                    }
+                    else if (!string.IsNullOrWhiteSpace(pageGroup.Name))
+                    {
+                        page.Title = pageGroup.Name;
                     }
                 }
                 else
