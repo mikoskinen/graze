@@ -471,17 +471,18 @@ namespace graze.extra.childpages
             DirCopy.Copy(contentSourceFolder, contentOutputFolder);
         }
 
-        private HashSet<(string, string)> _handledPostContentFolders = new HashSet<(string, string)>();
 
         private void CopyPostContent(List<Page> posts, string childPagesFolder, string outputFolder)
         {
+            var handledPostContentFolders = new HashSet<(string, string)>();
+
             foreach (var post in posts)
             {
                 var postOriginalDirectory = Path.GetDirectoryName(post.OriginalLocation);
                 var postTargetDirectory = Path.GetDirectoryName(post.OutputLocation);
 
                 var key = (postOriginalDirectory, postTargetDirectory);
-                if (_handledPostContentFolders.Contains(key))
+                if (handledPostContentFolders.Contains(key))
                 {
                     continue;
                 }
@@ -496,7 +497,7 @@ namespace graze.extra.childpages
                     File.Copy(imageFile, Path.Combine(postTargetDirectory, fileName), true);
                 }
 
-                _handledPostContentFolders.Add(key);
+                handledPostContentFolders.Add(key);
             }
         }
 
