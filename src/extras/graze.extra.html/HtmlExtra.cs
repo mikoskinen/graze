@@ -14,10 +14,14 @@ namespace graze.extra.html
         public object GetExtra(XElement element, dynamic currentModel)
         {
             var xAttribute = element.Attribute("Url");
+
             if (xAttribute == null)
+            {
                 return null;
+            }
 
             var client = new WebClient();
+
             return client.DownloadString(xAttribute.Value);
         }
     }
