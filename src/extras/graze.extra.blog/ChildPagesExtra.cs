@@ -31,6 +31,7 @@ namespace graze.extra.childpages
         private string _relativePathPrefix;
         private bool _shouldGenerateFolderForEachPost;
         private bool _shouldGenerateRss;
+        private bool _isRootFolder;
 
         public string KnownElement
         {
@@ -47,6 +48,8 @@ namespace graze.extra.childpages
             _shouldGenerateRss = GetShouldGenerateRss(element);
             _shouldGenerateFolderForEachPost = GetShouldGenerateFolderForEachPost(element);
             _readmeName = GetReadmeName(element);
+            _isRootFolder = GetIsRootFolder(element);
+            
             var childPagesFolder = GetChildPagesFolder(element);
 
             var childPagesOutputFolder = element.LastNode != null && element.LastNode.NodeType == XmlNodeType.Text
@@ -148,6 +151,16 @@ namespace graze.extra.childpages
 
             return element.Attribute("ReadmeName").Value;
         }
+        
+        private bool GetIsRootFolder(XElement element)
+        {
+            if (element.Attribute("IsRoot") == null)
+            {
+                return false;
+            }
+
+            return bool.Parse(element.Attribute("IsRoot").Value);
+        }
 
         private string GetChildPagesFolder(XElement element)
         {
@@ -156,7 +169,17 @@ namespace graze.extra.childpages
 
         private void CreateTagPages(dynamic currentModel, string outputFolder, string childPagesOutputFolder, string tagLayoutFile, string tagsIndexLayoutFile)
         {
-            var tagsRoot = Path.Combine(outputFolder, "tags");
+            string tagsRoot;
+            
+            if (_isRootFolder)
+            {
+                tagsRoot = Path.Combine(outputFolder, "tags");
+            }
+            else
+            {
+                tagsRoot = Path.Combine(outputFolder, _relativePathPrefix, "tags");
+            }
+            
             Directory.CreateDirectory(tagsRoot);
 
             var modelDictionary = (IDictionary<string, object>) currentModel;
@@ -168,7 +191,7 @@ namespace graze.extra.childpages
 
                 Directory.CreateDirectory(tagPath);
 
-                var layout = File.ReadAllText(tagLayoutFile);
+                var layout = ReadLayout(tagLayoutFile);
 
                 if (modelDictionary.ContainsKey("Tag"))
                 {
@@ -228,10 +251,21 @@ namespace graze.extra.childpages
             modelDictionary.Add("Pages", pages);
             modelDictionary.Add("PagesDesc", pages.OrderByDescending(x => x.Time).ToList());
             modelDictionary.Add("PagesAsc", pages.OrderBy(x => x.Time).ToList());
+            
+            string indexFileLocation;
 
-            var indexFileLocation = Path.Combine(outputFolder, indexPageFileName);
+            if (_isRootFolder)
+            {
+                indexFileLocation = Path.Combine(outputFolder, indexPageFileName);
+            }
+            else
+            {
+                indexFileLocation = Path.Combine(outputFolder, _relativePathPrefix, indexPageFileName);
+            }
 
-            var layoutContent = File.ReadAllText(layoutFile);
+            Directory.CreateDirectory(Path.GetDirectoryName(indexFileLocation));
+            
+            var layoutContent = ReadLayout(layoutFile);
 
             var staticPage = _generator.GenerateOutput(currentModel, layoutContent);
 
@@ -247,7 +281,7 @@ namespace graze.extra.childpages
             var fileContent = File.ReadAllText(file);
             var meta = new Dictionary<string, string>();
             var content = fileContent;
-            
+
             var postContent = Regex.Split(fileContent, "---");
             var containsMetaData = postContent.Count() > 1;
 
@@ -451,18 +485,44 @@ namespace graze.extra.childpages
 
             modelDictionary.Add("Page", page);
 
-            var postFolder = Path.Combine(outputFolder, Path.GetDirectoryName(page.Location.Trim('/')));
+            var filePath = page.Location.Trim('/');
+
+            if (!string.IsNullOrWhiteSpace(_relativePathPrefix) && _isRootFolder)
+            {
+                filePath = filePath.Replace(_relativePathPrefix + "/", "");
+            }
+            
+            var postFolder = Path.Combine(outputFolder, Path.GetDirectoryName(filePath));
             Directory.CreateDirectory(postFolder);
 
-            var layoutContent = File.ReadAllText(page.LayoutFile);
+            var layoutFile = page.LayoutFile;
+            var layoutContent = ReadLayout(layoutFile);
             var staticPage = _generator.GenerateOutput(currentModel, layoutContent);
 
-            var postFileName = Path.Combine(outputFolder, page.Location.Trim('/'));
+            var postFileName = Path.Combine(outputFolder, filePath);
             File.WriteAllText(postFileName, staticPage);
 
             page.OutputLocation = postFileName;
 
             modelDictionary.Remove("Page");
+        }
+
+        private string ReadLayout(string layoutFile)
+        {
+            var result = File.ReadAllText(layoutFile);
+
+            if (string.IsNullOrWhiteSpace(_relativePathPrefix))
+            {
+                return result;
+            }
+
+            if (!string.IsNullOrWhiteSpace(_relativePathPrefix) && !_isRootFolder)
+            {
+                return result;
+            }
+            
+            result = result.Replace("/assets", $"/{_relativePathPrefix}/assets");
+            return result;
         }
 
         private void CopyContent(string childPagesFolder, string outputFolder)
@@ -633,7 +693,7 @@ namespace graze.extra.childpages
                     pageGroup.Pages = new List<Page>();
                 }
             }
-            
+
             foreach (var post in pages.Where(x => x.IncludeInNavigation))
             {
                 var postGroup = result.FirstOrDefault(x => x.Key == post.Group);

@@ -1,2 +1,2 @@
 dotnet build ..\src\graze.sln -c Release
-nuget pack graze.nuspec -Version 8.0.0-alpha9
+nuget pack graze.nuspec -Version 8.0.0-rc1
