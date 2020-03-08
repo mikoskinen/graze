@@ -4,7 +4,7 @@ Graze is a static site generator. It takes a template and a configuration file a
 
 ### Breaking changes for new versions of Graze (moving from .NET Framework to .NET Core and .NET Standard)
 
-Latest version of Graze has been updated from .NET Framework to .NET Core 2.2 and .NET Standard 2.0. This currently causes two breaking changes, one for layouts and one for raw HTML:
+Latest version of Graze has been updated from .NET Framework to .NET Core 3.1 and .NET Standard 2.0. This currently causes two breaking changes, one for layouts and one for raw HTML:
 
 1. Reference to layout file using Layout, instead of _Layout like before.
 2. For now, the HTML is encoded by default and the only way to get around this is set DisableEncoding = true; in your cshtml-file.
