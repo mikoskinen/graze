@@ -13,23 +13,23 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <licenseUrl>https://github.com/mikoskinen/graze/blob/master/license/Graze.txt</licenseUrl>	
     <dependencies>
-      <group targetFramework=".NETCoreApp2.2">
+      <group targetFramework=".NETCoreApp3.1">
         <dependency id="AngleSharp" version="[0.11.0]" exclude="[Build,Analyzers" />
-        <dependency id="MarkDig" version="[0.15.7]" exclude="[Build,Analyzers" />
-        <dependency id="RazorLight" version="[2.0.0-beta1]" exclude="[Build,Analyzers" />
-        <dependency id="System.ComponentModel.Composition" version="[4.5.0]" exclude="Build,Analyzers" />
-        <dependency id="System.ServiceModel.Syndication" version="[4.5.0]" exclude="Build,Analyzers" />
-        <dependency id="System.Text.Encoding.CodePages" version="[4.5.0]" exclude="Build,Analyzers" />
+        <dependency id="MarkDig" version="[0.18.3]" exclude="[Build,Analyzers" />
+        <dependency id="RazorLight" version="[2.0.0-beta4]" exclude="[Build,Analyzers" />
+        <dependency id="System.ComponentModel.Composition" version="[4.6.0]" exclude="Build,Analyzers" />
+        <dependency id="System.ServiceModel.Syndication" version="[4.6.0]" exclude="Build,Analyzers" />
+        <dependency id="System.Text.Encoding.CodePages" version="[4.5.1]" exclude="Build,Analyzers" />
       </group>
     </dependencies>	
   </metadata>
   <files>
-    <file src="..\src\graze\bin\template\assets\example\configuration.txt" target="content\template\assets\example\configuration.txt" />
-    <file src="..\src\graze\bin\template\assets\example\layout.txt" target="content\template\assets\example\layout.txt" />
-    <file src="..\src\graze\bin\template\assets\readme.txt" target="content\template\assets\readme.txt" />
-    <file src="..\src\graze\bin\template\configuration.xml" target="content\template\configuration.xml" />
-    <file src="..\src\graze\bin\template\index.cshtml" target="content\template\index.cshtml" />
-    <file src="..\src\graze\bin\template\pages\help.md" target="content\template\pages\help.md" />
+    <file src="..\src\graze\bin\release\template\assets\example\configuration.txt" target="content\template\assets\example\configuration.txt" />
+    <file src="..\src\graze\bin\release\template\assets\example\layout.txt" target="content\template\assets\example\layout.txt" />
+    <file src="..\src\graze\bin\release\template\assets\readme.txt" target="content\template\assets\readme.txt" />
+    <file src="..\src\graze\bin\release\template\configuration.xml" target="content\template\configuration.xml" />
+    <file src="..\src\graze\bin\release\template\index.cshtml" target="content\template\index.cshtml" />
+    <file src="..\src\graze\bin\release\template\pages\help.md" target="content\template\pages\help.md" />
     <file src="..\src\graze\bin\release\graze.contracts.dll" target="lib\netcoreapp2.2\graze.contracts.dll" />
     <file src="..\src\graze\bin\release\graze.dll" target="lib\netcoreapp2.2\graze.dll" />
     <file src="..\src\graze\bin\release\graze.contracts.dll" target="lib\netcoreapp2.2\graze.contracts.dll" />
