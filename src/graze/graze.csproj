@@ -2,19 +2,19 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <PreserveCompilationContext>true</PreserveCompilationContext>
-    <Copyright>Copyright © Mikael Koskinen 2019</Copyright>
+    <Copyright>Copyright © Mikael Koskinen 2020</Copyright>
     <Description>Graze is a static web site generator. It takes a template and a configuration file and generates a static web site. The generated site is pure HTML / CSS / JavaScript and can be hosted on any web server. The Graze templates are created using the Razor Syntax.</Description>
-    <AssemblyVersion>8.0.0.0</AssemblyVersion>
-    <FileVersion>8.0.0.0</FileVersion>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <Version>8.0.0-rc1</Version>
     <Authors>Mikael Koskinen</Authors>
     <PackageTags>generator website site graze template templating templatingengine</PackageTags>
     <PackageProjectUrl>https://github.com/mikoskinen/graze</PackageProjectUrl>
     <MvcRazorExcludeRefAssembliesFromPublish>false</MvcRazorExcludeRefAssembliesFromPublish>
+    <AssemblyVersion>9.0.0.0</AssemblyVersion>
+    <FileVersion>9.0.0.0</FileVersion>
+    <Version>9.0.0-rc1</Version>    
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -32,10 +32,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RazorLight" Version="2.0.0-beta1" />
-    <PackageReference Include="System.ComponentModel.Composition" Version="4.5.0" />
-    <PackageReference Include="System.ServiceModel.Syndication" Version="4.5.0" />
-    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.0" />
+    <PackageReference Include="RazorLight" Version="2.0.0-beta4" />
+    <PackageReference Include="System.ComponentModel.Composition" Version="4.6.0" />
+    <PackageReference Include="System.ServiceModel.Syndication" Version="4.6.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="4.5.1" />
   </ItemGroup>
 
   <ItemGroup>

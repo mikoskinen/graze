@@ -243,7 +243,17 @@ namespace graze
 
             var engine = GetRazorEngine(templateRootPath);
 
-            var result = engine.CompileRenderAsync(template.GetHashCode().ToString(), template, model, model).Result;
+            string result;
+            var cacheResult = engine.Handler.Cache.RetrieveTemplate(template.GetHashCode().ToString());
+
+            if (cacheResult.Success)
+            {
+                result = engine.RenderTemplateAsync(cacheResult.Template.TemplatePageFactory(), model).Result;
+            }
+            else
+            {
+                result = engine.CompileRenderStringAsync(template.GetHashCode().ToString(), template, model, model).Result;
+            }
 
             return result;
         }
@@ -264,7 +274,7 @@ namespace graze
 
                 _engine = new RazorLightEngineBuilder()
                     .UseMemoryCachingProvider()
-                    .UseFilesystemProject(templateRootPath)
+                    .UseFileSystemProject(templateRootPath)
                     .Build();
 
                 return _engine;
